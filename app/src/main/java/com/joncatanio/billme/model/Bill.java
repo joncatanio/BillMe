@@ -1,4 +1,5 @@
- package com.joncatanio.billme.model;
+
+package com.joncatanio.billme.model;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "numPayers",
+        "groupName",
         "totalAmt",
         "paid",
         "ownerUsername",
@@ -24,6 +26,8 @@ public class Bill {
 
     @JsonProperty("numPayers")
     private Integer numPayers;
+    @JsonProperty("groupName")
+    private String groupName;
     @JsonProperty("totalAmt")
     private String totalAmt;
     @JsonProperty("paid")
@@ -59,6 +63,26 @@ public class Bill {
     @JsonProperty("numPayers")
     public void setNumPayers(Integer numPayers) {
         this.numPayers = numPayers;
+    }
+
+    /**
+     *
+     * @return
+     * The groupName
+     */
+    @JsonProperty("groupName")
+    public String getGroupName() {
+        return groupName;
+    }
+
+    /**
+     *
+     * @param groupName
+     * The groupName
+     */
+    @JsonProperty("groupName")
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     /**
