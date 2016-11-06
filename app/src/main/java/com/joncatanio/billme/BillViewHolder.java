@@ -56,9 +56,8 @@ public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     @Override
     public void onClick(View view) {
         // Pass the bill id on through to make another API call
-//        Intent i = new Intent(view.getContext(), ViewBill.class);
-//        i.putExtra(BILL_ID, listItem.getBillId());
-//        view.getContext().startActivity(i);
-        Log.i("BillViewHolder", "clicked");
+        Intent i = new Intent(view.getContext(), ViewBillActivity.class);
+        i.putExtra(BILL_ID, listItem.getBillId());
+        view.getContext().startActivity(i);
     }
 }
