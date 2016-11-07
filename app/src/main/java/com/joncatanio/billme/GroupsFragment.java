@@ -1,12 +1,29 @@
 package com.joncatanio.billme;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.joncatanio.billme.model.GroupShort;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.adapter.rxjava.HttpException;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -22,6 +39,8 @@ public class GroupsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private GroupObserver groupObserver;
+    private GroupAdapter groupAdapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -64,7 +83,10 @@ public class GroupsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_groups, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_groups, container, false);
+        fetchContent(rootView);
+
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -104,5 +126,81 @@ public class GroupsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void fetchContent(View rootView) {
+        String authToken = BillMeApi.getAuthToken(getActivity());
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.groups_recycler_view);
+        assert recyclerView != null;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        //billObserver = (BillObserver) getActivity().getLastNonConfigurationInstance();
+
+        if (groupObserver == null) {
+            groupObserver = new GroupObserver();
+            groupAdapter = new GroupAdapter(groupObserver.getGroups());
+            groupObserver.bind(getActivity(), this);
+
+            BillMeApi.get()
+                    .getGroups(authToken)
+                    .flatMap(new Func1<List<GroupShort>, Observable<GroupShort>>() {
+                        @Override
+                        public Observable<GroupShort> call(List<GroupShort> groups) {
+                            return Observable.from(groups);
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(groupObserver);
+        } else {
+            groupAdapter = new GroupAdapter(groupObserver.getGroups());
+            groupObserver.bind(getActivity(), this);
+        }
+
+        recyclerView.setAdapter(groupAdapter);
+    }
+
+    private static class GroupObserver implements Observer<GroupShort> {
+        private FragmentActivity mActivity;
+        private GroupsFragment frag;
+
+        private ArrayList<GroupShort> groups = new ArrayList<>();
+
+        private void bind(FragmentActivity activity, GroupsFragment frag) {
+            this.mActivity = activity;
+            this.frag = frag;
+        }
+
+        private void unbind() {
+            mActivity = null;
+        }
+
+        public ArrayList<GroupShort> getGroups() {
+            return groups;
+        }
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            HttpException httpErr = (HttpException) e;
+
+            if (httpErr.code() == 403) {
+                // The user has an invalid/expired token, make them log in.
+                Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
+                mActivity.startActivity(intent);
+            } else {
+                Log.e("BillObserver", e.getMessage());
+            }
+        }
+
+        @Override
+        public void onNext(GroupShort bill) {
+            int index = groups.size();
+            groups.add(bill);
+            frag.groupAdapter.notifyItemInserted(index);
+        }
     }
 }

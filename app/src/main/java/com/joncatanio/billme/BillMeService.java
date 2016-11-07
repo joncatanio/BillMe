@@ -2,11 +2,12 @@ package com.joncatanio.billme;
 
 import com.joncatanio.billme.model.Bill;
 import com.joncatanio.billme.model.BillFull;
+import com.joncatanio.billme.model.GroupFull;
+import com.joncatanio.billme.model.GroupShort;
 import com.joncatanio.billme.model.Login;
 
 import java.util.List;
 
-import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -25,4 +26,10 @@ public interface BillMeService {
 
     @GET("bill/{billId}/")
     Observable<BillFull> getBill(@Header("Authorization") String authToken, @Path("billId") int billId);
+
+    @GET("groups/")
+    Observable<List<GroupShort>> getGroups(@Header("Authorization") String authToken);
+
+    @GET("group/{groupId}/")
+    Observable<GroupFull> getGroup(@Header("Authorization") String authToken, @Path("groupId") int groupId);
 }

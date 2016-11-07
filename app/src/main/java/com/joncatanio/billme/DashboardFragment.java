@@ -1,12 +1,29 @@
 package com.joncatanio.billme;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.joncatanio.billme.model.Bill;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.adapter.rxjava.HttpException;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -22,6 +39,8 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private BillObserver billObserver;
+    private BillAdapter billAdapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -61,10 +80,18 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        fetchContent(rootView);
+
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -104,5 +131,81 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void fetchContent(View rootView) {
+        String authToken = BillMeApi.getAuthToken(getActivity());
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.bill_recycler_view);
+        assert recyclerView != null;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        //billObserver = (BillObserver) getActivity().getLastNonConfigurationInstance();
+
+        if (billObserver == null) {
+            billObserver = new BillObserver();
+            billAdapter = new BillAdapter(billObserver.getBills());
+            billObserver.bind(getActivity(), this);
+
+            BillMeApi.get()
+                    .getBills(authToken)
+                    .flatMap(new Func1<List<Bill>, Observable<Bill>>() {
+                        @Override
+                        public Observable<Bill> call(List<Bill> bills) {
+                            return Observable.from(bills);
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(billObserver);
+        } else {
+            billAdapter = new BillAdapter(billObserver.getBills());
+            billObserver.bind(getActivity(), this);
+        }
+
+        recyclerView.setAdapter(billAdapter);
+    }
+
+    private static class BillObserver implements Observer<Bill> {
+        private FragmentActivity mActivity;
+        private DashboardFragment frag;
+
+        private ArrayList<Bill> bills = new ArrayList<>();
+
+        private void bind(FragmentActivity activity, DashboardFragment frag) {
+            this.mActivity = activity;
+            this.frag = frag;
+        }
+
+        private void unbind() {
+            mActivity = null;
+        }
+
+        public ArrayList<Bill> getBills() {
+            return bills;
+        }
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            HttpException httpErr = (HttpException) e;
+
+            if (httpErr.code() == 403) {
+                // The user has an invalid/expired token, make them log in.
+                Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
+                mActivity.startActivity(intent);
+            } else {
+                Log.e("BillObserver", e.getMessage());
+            }
+        }
+
+        @Override
+        public void onNext(Bill bill) {
+            int index = bills.size();
+            bills.add(bill);
+            frag.billAdapter.notifyItemInserted(index);
+        }
     }
 }
