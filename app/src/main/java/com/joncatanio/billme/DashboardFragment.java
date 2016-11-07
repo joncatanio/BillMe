@@ -3,6 +3,7 @@ package com.joncatanio.billme;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,7 +65,15 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.addBillFAB);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onFragmentInteraction(new Uri.Builder().fragment(MainActivity.NEW_BILL).build());
+            }
+        });
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

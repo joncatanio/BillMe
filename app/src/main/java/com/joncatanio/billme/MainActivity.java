@@ -36,7 +36,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity
-    implements DashboardFragment.OnFragmentInteractionListener, GroupsFragment.OnFragmentInteractionListener, AccountFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListener {
+    implements DashboardFragment.OnFragmentInteractionListener, GroupsFragment.OnFragmentInteractionListener, AccountFragment.OnFragmentInteractionListener, NewBillFragment.OnFragmentInteractionListener, NewGroupFragment.OnFragmentInteractionListener {
     private static final String TAG = "BillMe";
     private Drawer drawer;
     private AccountHeader accountHeader;
@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity
     private static final int GROUPS = 1;
     private static final int ACCOUNT = 2;
     private static final int SETTINGS = 3;
+
+    public static final String NEW_BILL = "newBill";
+    public static final String NEW_GROUP = "newGroup";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +132,22 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+        switch (uri.getFragment()) {
+            case NEW_BILL:
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentLayout, new NewBillFragment());
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+            case NEW_GROUP:
+                FragmentTransaction fragmentTransaction2 = fragmentManager.beginTransaction();
+                fragmentTransaction2.replace(R.id.fragmentLayout, new NewGroupFragment());
+                fragmentTransaction2.addToBackStack(null);
+                fragmentTransaction2.commit();
+                break;
+            default:
+                break;
+        }
     }
 
     @Override

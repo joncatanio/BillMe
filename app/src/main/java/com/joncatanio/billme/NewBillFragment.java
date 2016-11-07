@@ -3,7 +3,6 @@ package com.joncatanio.billme;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +12,12 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link GroupsFragment.OnFragmentInteractionListener} interface
+ * {@link NewBillFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link GroupsFragment#newInstance} factory method to
+ * Use the {@link NewBillFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class GroupsFragment extends Fragment {
+public class NewBillFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,7 +29,7 @@ public class GroupsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public GroupsFragment() {
+    public NewBillFragment() {
         // Required empty public constructor
     }
 
@@ -40,11 +39,11 @@ public class GroupsFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment GroupsFragment.
+     * @return A new instance of fragment NewBillFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static GroupsFragment newInstance(String param1, String param2) {
-        GroupsFragment fragment = new GroupsFragment();
+    public static NewBillFragment newInstance(String param1, String param2) {
+        NewBillFragment fragment = new NewBillFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -65,15 +64,7 @@ public class GroupsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_groups, container, false);
-        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.addGroupFAB);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.onFragmentInteraction(new Uri.Builder().fragment(MainActivity.NEW_GROUP).build());
-            }
-        });
-        return v;
+        return inflater.inflate(R.layout.fragment_new_bill, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
