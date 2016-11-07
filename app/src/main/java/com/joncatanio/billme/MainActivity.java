@@ -1,6 +1,9 @@
 package com.joncatanio.billme;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,12 +35,14 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+    implements DashboardFragment.OnFragmentInteractionListener, GroupsFragment.OnFragmentInteractionListener, AccountFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListener {
     private static final String TAG = "BillMe";
     private Drawer drawer;
     private AccountHeader accountHeader;
     private BillObserver billObserver;
     private BillAdapter billAdapter;
+    private FragmentManager fragmentManager;
 
     private static final int DASHBOARD = 0;
     private static final int GROUPS = 1;
@@ -49,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fetchContent();
+        //fetchContent();
+        fragmentManager = getSupportFragmentManager();
 
         accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -76,23 +82,30 @@ public class MainActivity extends AppCompatActivity {
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         switch ((int)drawerItem.getIdentifier()) {
                             case DASHBOARD:
                                 Log.d(TAG, "dashboard");
+                                fragmentTransaction.replace(R.id.fragmentLayout, new DashboardFragment());
                                 break;
                             case GROUPS:
                                 Log.d(TAG, "groups");
+                                fragmentTransaction.replace(R.id.fragmentLayout, new GroupsFragment());
                                 break;
                             case ACCOUNT:
                                 Log.d(TAG, "account");
+                                fragmentTransaction.replace(R.id.fragmentLayout, new AccountFragment());
                                 break;
                             case SETTINGS:
                                 Log.d(TAG, "settings");
+                                fragmentTransaction.replace(R.id.fragmentLayout, new SettingsFragment());
                                 break;
                             default:
                                 Log.d(TAG, "default");
+                                fragmentTransaction.replace(R.id.fragmentLayout, new DashboardFragment());
                                 break;
                         }
+                        fragmentTransaction.commit();
                         return false;
                     }
                 });
@@ -110,6 +123,12 @@ public class MainActivity extends AppCompatActivity {
             FrameLayout drawerLayout = (FrameLayout) findViewById(R.id.drawerLayout);
             drawerLayout.addView(drawer.getSlider());
         }
+
+        fragmentManager.beginTransaction().add(R.id.fragmentLayout, new DashboardFragment()).commit();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
     }
 
     @Override
@@ -121,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchContent() {
+    /*private void fetchContent() {
         String authToken = BillMeApi.getAuthToken(this);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.bill_recycler_view);
         assert recyclerView != null;
@@ -151,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         recyclerView.setAdapter(billAdapter);
-    }
+    }*/
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
