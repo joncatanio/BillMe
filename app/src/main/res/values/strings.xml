@@ -11,4 +11,7 @@
     <string name="login_btn">Go</string>
     <string name="login_header">BillMe</string>
     <string name="days_left">Days Left</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
