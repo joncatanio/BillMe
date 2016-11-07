@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -83,10 +84,18 @@ public class GroupsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_groups, container, false);
-        fetchContent(rootView);
+        View v = inflater.inflate(R.layout.fragment_groups, container, false);
+        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.addGroupFAB);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onFragmentInteraction(new Uri.Builder().fragment(MainActivity.NEW_GROUP).build());
+            }
+        });
 
-        return rootView;
+        fetchContent(v);
+
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

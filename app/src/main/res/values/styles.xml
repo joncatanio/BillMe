@@ -19,6 +19,8 @@
         <item name="material_drawer_selected">@color/colorPrimary</item>
         <item name="material_drawer_selected_text">@color/colorAccent</item>
         <item name="material_drawer_header_selection_text">@color/material_drawer_header_selection_text</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
