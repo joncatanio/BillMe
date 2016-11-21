@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#737373</color>
     <color name="colorPrimaryDark">#383838</color>
-    <color name="colorAccent">#46b700</color>
+    <color name="colorAccent">#76FF03</color>
     <color name="colorPrimaryText">#eeeeee</color>
     <color name="billListItemBorder">#979797</color>
     <color name="button">#76FF03</color>
