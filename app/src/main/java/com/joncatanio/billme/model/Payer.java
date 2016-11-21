@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "name",
         "userId",
         "paid",
+        "owner",
         "profilePic",
         "email"
 })
@@ -28,6 +29,8 @@ public class Payer {
     private Integer userId;
     @JsonProperty("paid")
     private Integer paid;
+    @JsonProperty("owner")
+    private Integer owner;
     @JsonProperty("profilePic")
     private String profilePic;
     @JsonProperty("email")
@@ -113,6 +116,26 @@ public class Payer {
     @JsonProperty("paid")
     public void setPaid(Integer paid) {
         this.paid = paid;
+    }
+
+    /**
+     *
+     * @return
+     * The owner
+     */
+    @JsonProperty("owner")
+    public Integer getOwner() {
+        return owner;
+    }
+
+    /**
+     *
+     * @param owner
+     * The owner
+     */
+    @JsonProperty("owner")
+    public void setOwner(Integer owner) {
+        this.owner = owner;
     }
 
     /**

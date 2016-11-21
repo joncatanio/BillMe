@@ -18,6 +18,7 @@ public class BillMeApi {
     private static final String BASE_URL = "http://10.0.2.2:5000/";
     private static final String TOKEN_FILE = "token";
     private static String authToken = null;
+    private static int userId;
 
     private static BillMeService sService;
 
@@ -45,6 +46,7 @@ public class BillMeApi {
                     InputStreamReader isr = new InputStreamReader(fis);
                     BufferedReader buf = new BufferedReader(isr);
                     authToken = buf.readLine();
+                    userId = Integer.parseInt(buf.readLine());
                 } else {
                     // Show login screen and get new token.
                     Intent intent = new Intent(context, LoginActivity.class);
@@ -58,16 +60,23 @@ public class BillMeApi {
         return authToken;
     }
 
-    public static void setAuthToken(String token, Context context) {
+    public static void setAuthToken(String token, Integer userId, Context context) {
         FileOutputStream outstream;
         authToken = token;
+        userId = userId;
 
         try {
             outstream = context.openFileOutput(TOKEN_FILE, Context.MODE_PRIVATE);
             outstream.write(token.getBytes());
+            outstream.write("\n".getBytes());
+            outstream.write(userId.toString().getBytes());
             outstream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static int getUserId() {
+        return userId;
     }
 }

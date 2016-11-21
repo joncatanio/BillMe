@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:weightSum="100"
+    android:background="@drawable/bill_list_background"
     android:clickable="true">
 
     <LinearLayout
@@ -19,6 +20,7 @@
             android:gravity="center"
             android:layout_weight="40"
             android:textSize="24sp"
+            android:fontFamily="sans-serif-light"
             android:id="@+id/list_bill_name"/>
         <TextView
             android:layout_width="wrap_content"
@@ -27,6 +29,7 @@
             android:gravity="center"
             android:layout_weight="30"
             android:textSize="16sp"
+            android:fontFamily="sans-serif-light"
             android:id="@+id/list_bill_cost"/>
         <TextView
             android:layout_width="wrap_content"
@@ -34,6 +37,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:layout_weight="30"
+            android:fontFamily="sans-serif-light"
             android:id="@+id/list_bill_group"/>
     </LinearLayout>
     <LinearLayout
@@ -46,15 +50,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:padding="5dp"
+            android:paddingTop="8dp"
+            android:paddingRight="5dp"
             android:layout_weight="20"
-            android:text="@string/days_left"/>
+            android:text="@string/days_left"
+            android:fontFamily="sans-serif-medium"
+            android:id="@+id/list_bill_days_left"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="80"
             android:layout_gravity="center"
-            android:textSize="56sp"
+            android:textSize="40sp"
+            android:fontFamily="sans-serif-medium"
             android:id="@+id/list_bill_remaining"/>
     </LinearLayout>
 

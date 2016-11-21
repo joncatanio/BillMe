@@ -27,6 +27,9 @@ public interface BillMeService {
     @GET("bill/{billId}/")
     Observable<BillFull> getBill(@Header("Authorization") String authToken, @Path("billId") int billId);
 
+    @GET("bills/pay/{billId}/")
+    Observable<Void> payBill(@Header("Authorization") String authToken, @Path("billId") int billId);
+
     @GET("groups/")
     Observable<List<GroupShort>> getGroups(@Header("Authorization") String authToken);
 

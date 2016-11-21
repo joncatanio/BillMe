@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#383838</color>
     <color name="colorAccent">#46b700</color>
     <color name="colorPrimaryText">#eeeeee</color>
+    <color name="billListItemBorder">#979797</color>
+    <color name="button">#76FF03</color>
+    <color name="buttonInactive">#64B5F6</color>
+    <color name="buttonText">#DA7E7E7E</color>
 </resources>

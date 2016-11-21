@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(Login login) {
-                        BillMeApi.setAuthToken(login.getToken(), getApplicationContext());
+                        BillMeApi.setAuthToken(login.getToken(), login.getUserId(), getApplicationContext());
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                     }

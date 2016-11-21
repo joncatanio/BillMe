@@ -1,5 +1,6 @@
 package com.joncatanio.billme;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -11,9 +12,11 @@ import java.util.ArrayList;
 
 public class PayerListAdapter extends RecyclerView.Adapter<PayerListViewHolder> {
     private ArrayList<Payer> payers;
+    private Resources resources;
 
-    public PayerListAdapter(ArrayList<Payer> payers) {
+    public PayerListAdapter(ArrayList<Payer> payers, Resources resources) {
         this.payers = payers;
+        this.resources = resources;
     }
 
     @Override
@@ -28,7 +31,7 @@ public class PayerListAdapter extends RecyclerView.Adapter<PayerListViewHolder> 
 
     @Override
     public void onBindViewHolder(PayerListViewHolder holder, int position) {
-        holder.bind(payers.get(position));
+        holder.bind(payers.get(position), resources);
     }
 
     @Override
