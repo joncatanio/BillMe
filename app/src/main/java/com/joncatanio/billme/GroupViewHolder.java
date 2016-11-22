@@ -1,7 +1,10 @@
 package com.joncatanio.billme;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +36,9 @@ public class GroupViewHolder extends RecyclerView.ViewHolder implements View.OnC
         } else {
             groupBalance.setText("Group Balance: $" + listItem.getAmtOwedAsGroup());
         }
+        byte[] img = Base64.decode(listItem.getGroupImg(), Base64.DEFAULT);
+        Bitmap bp = BitmapFactory.decodeByteArray(img, 0, img.length);
+        groupImg.setImageBitmap(bp);
     }
 
     @Override

@@ -1,10 +1,15 @@
 package com.joncatanio.billme;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,5 +45,10 @@ public class PayerListViewHolder extends RecyclerView.ViewHolder {
         if (payer.getOwner() == 1) {
             payerOwnerStatus.setImageDrawable(resources.getDrawable(R.drawable.ic_cash_grey_24dp, null));
         }
+        byte[] img = Base64.decode(payer.getProfilePic(), Base64.DEFAULT);
+        Bitmap src = BitmapFactory.decodeByteArray(img, 0, img.length);
+        RoundedBitmapDrawable roundDr = RoundedBitmapDrawableFactory.create(resources, src);
+        roundDr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+        payerProfilePic.setImageDrawable(roundDr);
     }
 }
