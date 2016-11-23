@@ -1,15 +1,24 @@
 package com.joncatanio.billme;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.joncatanio.billme.model.GroupFull;
 
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class ViewGroupActivity extends AppCompatActivity {
@@ -33,6 +42,7 @@ public class ViewGroupActivity extends AppCompatActivity {
         BillMeApi.get()
                 .getGroup(authToken, groupId)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<GroupFull>() {
                     @Override
                     public void onCompleted() {
@@ -60,8 +70,29 @@ public class ViewGroupActivity extends AppCompatActivity {
     }
 
     private void setScreenData(GroupFull group) {
+        ImageView groupImg = (ImageView) findViewById(R.id.view_group_img);
         TextView groupName = (TextView) findViewById(R.id.view_group_name);
+        Button addMemberBtn = (Button) findViewById(R.id.view_group_btn);
+        RecyclerView groupMembers = (RecyclerView) findViewById(R.id.view_group_member_list);
 
         groupName.setText(group.getGroupName());
+
+        // Decode string and set group image
+        byte[] img = Base64.decode(group.getGroupImg(), Base64.DEFAULT);
+        Bitmap src = BitmapFactory.decodeByteArray(img, 0, img.length);
+        groupImg.setImageBitmap(src);
+
+        // Setup recycler view for group members
+        groupMembers.setLayoutManager(new LinearLayoutManager(this));
+        GroupMemberAdapter adapter = new GroupMemberAdapter(group.getMembers(), getResources());
+        groupMembers.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        addMemberBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("ViewGroupActivity", "add member pressed");
+            }
+        });
     }
 }

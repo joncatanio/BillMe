@@ -4,10 +4,115 @@
     android:layout_height="match_parent"
     tools:context="com.joncatanio.billme.NewBillFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="new bill" />
+        android:padding="10dp"
+        android:weightSum="100">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="15"
+            android:hint="Bill Name"
+            android:gravity="center"
+            android:textSize="32sp"
+            android:textColor="#DA000000"
+            android:fontFamily="sans-serif-light"
+            android:id="@+id/new_bill_name"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            android:layout_weight="10">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="50"
+                android:gravity="center"
+                android:text="Total Amount: $"
+                android:textSize="22sp"
+                android:textColor="#DA000000"
+                android:fontFamily="sans-serif-light"/>
+            <EditText
+                android:inputType="numberDecimal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="50"
+                android:gravity="left"
+                android:textSize="22sp"
+                android:hint="0.00"
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/new_bill_amt">
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:weightSum="100">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="30"
+                android:gravity="center"
+                android:text="Due:"
+                android:textSize="22sp"
+                android:textColor="#FF000000"
+                android:fontFamily="sans-serif-light"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="70"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-light"
+                android:background="@drawable/custom_button_input"
+                android:id="@+id/new_bill_date_picker_btn"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:weightSum="100">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="30"
+                android:gravity="center"
+                android:text="Group:"
+                android:textSize="22sp"
+                android:textColor="#FF000000"
+                android:fontFamily="sans-serif-light"/>
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="70"
+                android:id="@+id/new_bill_group_dropdown">
+
+            </Spinner>
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="45"
+            android:id="@+id/new_bill_included_members"/>
+        <Button
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:text="Add New Bill"
+            android:textSize="18sp"
+            android:textColor="@color/buttonText"
+            android:fontFamily="sans-serif-medium"
+            android:background="@drawable/custom_button"
+            android:id="@+id/new_bill_add_btn"/>
+    </LinearLayout>
 
 </FrameLayout>

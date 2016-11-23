@@ -50,7 +50,7 @@
             android:layout_height="match_parent"
             android:padding="10dp"
             android:id="@+id/view_bill_payers"
-            tools:context="com.joncatanio.billme.MainActivity">
+            tools:context="com.joncatanio.billme.ViewBillActivity">
 
         </android.support.v7.widget.RecyclerView>
     </LinearLayout>
