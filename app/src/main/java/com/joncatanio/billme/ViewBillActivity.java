@@ -53,6 +53,7 @@ public class ViewBillActivity extends AppCompatActivity {
         BillMeApi.get()
                 .getBill(authToken, billId)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<BillFull>() {
                     @Override
                     public void onCompleted() {
