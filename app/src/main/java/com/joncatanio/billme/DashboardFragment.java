@@ -97,6 +97,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
                 mListener.onFragmentInteraction(new Uri.Builder().fragment(MainActivity.NEW_BILL).build());
             }
         });
+        fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_attach_money_grey_24dp, null));
 
         fetchContent(v);
         return v;

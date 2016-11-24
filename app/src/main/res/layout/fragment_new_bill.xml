@@ -114,5 +114,4 @@
             android:background="@drawable/custom_button"
             android:id="@+id/new_bill_add_btn"/>
     </LinearLayout>
-
 </FrameLayout>

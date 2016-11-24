@@ -4,10 +4,40 @@
     android:layout_height="match_parent"
     tools:context="com.joncatanio.billme.NewGroupFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="new group" />
+        android:orientation="vertical"
+        android:weightSum="100">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="50"
+            android:clickable="true"
+            android:id="@+id/new_group_img"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="15"
+            android:gravity="center"
+            android:textSize="32sp"
+            android:textColor="#DA000000"
+            android:fontFamily="sans-serif-light"
+            android:hint="Group Name"
+            android:id="@+id/new_group_name"/>
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:layout_gravity="center"
+            android:text="Add Group"
+            android:textSize="18sp"
+            android:textColor="@color/buttonText"
+            android:fontFamily="sans-serif-medium"
+            android:paddingRight="10dp"
+            android:background="@drawable/custom_button"
+            android:id="@+id/new_group_add_btn"/>
+    </LinearLayout>
 
 </FrameLayout>

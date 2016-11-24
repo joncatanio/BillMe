@@ -7,6 +7,8 @@ import com.joncatanio.billme.model.GroupShort;
 import com.joncatanio.billme.model.Login;
 import com.joncatanio.billme.model.NewBill;
 import com.joncatanio.billme.model.NewBillResponse;
+import com.joncatanio.billme.model.NewGroup;
+import com.joncatanio.billme.model.NewGroupResponse;
 
 import java.util.List;
 
@@ -39,6 +41,9 @@ public interface BillMeService {
 
     @GET("groups/")
     Observable<List<GroupShort>> getGroups(@Header("Authorization") String authToken);
+
+    @POST("groups/add/")
+    Observable<NewGroupResponse> addGroup(@Header("Authorization") String authToken, @Body NewGroup body);
 
     @GET("group/{groupId}/")
     Observable<GroupFull> getGroup(@Header("Authorization") String authToken, @Path("groupId") int groupId);
