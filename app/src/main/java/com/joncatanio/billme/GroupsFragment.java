@@ -92,6 +92,7 @@ public class GroupsFragment extends Fragment {
                 mListener.onFragmentInteraction(new Uri.Builder().fragment(MainActivity.NEW_GROUP).build());
             }
         });
+        fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_group_add_grey_24dp, null));
 
         fetchContent(v);
 

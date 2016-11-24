@@ -4,10 +4,52 @@
     android:layout_height="match_parent"
     tools:context="com.joncatanio.billme.AccountFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="account" />
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:id="@+id/account_profile_pic"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textSize="28sp"
+            android:textColor="#DA000000"
+            android:fontFamily="sans-serif-light"
+            android:id="@+id/account_fullname"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textColor="#DA000000"
+            android:fontFamily="sans-serif-light"
+            android:id="@+id/account_email"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textColor="#DA000000"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-light"
+            android:id="@+id/account_username"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:background="#FFE0E0E0"
+            android:textColor="#8D000000"
+            android:fontFamily="sans-serif-light"
+            android:text="Payment History"/>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/account_bill_history">
 
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
 </FrameLayout>

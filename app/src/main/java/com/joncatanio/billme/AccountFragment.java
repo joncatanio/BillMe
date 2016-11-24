@@ -1,12 +1,35 @@
 package com.joncatanio.billme;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.joncatanio.billme.model.Account;
+import com.joncatanio.billme.model.Bill;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -22,12 +45,17 @@ public class AccountFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int FETCH_IMAGE = 21;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    // View variables
+    private ImageView userImg;
+    private Bitmap bmpImg;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -64,7 +92,10 @@ public class AccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_account, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_account, container, false);
+
+        fetchContent(rootView);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -104,5 +135,97 @@ public class AccountFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void fetchContent(final View rootView) {
+        BillMeApi.get()
+                .getAccount(BillMeApi.getAuthToken(getActivity()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Account>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("AccountFragment", "error getting account info");
+                    }
+
+                    @Override
+                    public void onNext(Account account) {
+                        populateAccountInfo(rootView, account);
+                    }
+                });
+    }
+
+    private void populateAccountInfo(final View rootView, final Account account) {
+        userImg = (ImageView) rootView.findViewById(R.id.account_profile_pic);
+        EditText userFullname = (EditText) rootView.findViewById(R.id.account_fullname);
+        TextView userEmail = (TextView) rootView.findViewById(R.id.account_email);
+        EditText username = (EditText) rootView.findViewById(R.id.account_username);
+
+        byte[] img = Base64.decode(account.getProfilePic(), Base64.DEFAULT);
+        bmpImg = BitmapFactory.decodeByteArray(img, 0, img.length);
+        userImg.setImageBitmap(bmpImg);
+        userImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/*");
+                startActivityForResult(i, FETCH_IMAGE);
+            }
+        });
+
+        userFullname.setText(account.getName());
+        userEmail.setText(account.getEmail());
+        username.setText(account.getUsername());
+
+        BillMeApi.get()
+                .getBillHistory(BillMeApi.getAuthToken(getActivity()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<Bill>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("Account", "bill history failed");
+                    }
+
+                    @Override
+                    public void onNext(List<Bill> bills) {
+                        populatePaymentHistory(rootView, account, (ArrayList<Bill>) bills);
+                    }
+                });
+    }
+
+    private void populatePaymentHistory(View rootView, Account account, ArrayList<Bill> bills) {
+        RecyclerView billHistory = (RecyclerView) rootView.findViewById(R.id.account_bill_history);
+
+        billHistory.setLayoutManager(new LinearLayoutManager(getActivity()));
+        BillHistoryAdapter adapter = new BillHistoryAdapter(bills);
+        billHistory.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == FETCH_IMAGE) {
+                Uri uri = data.getData();
+
+                try {
+                    bmpImg = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                    userImg.setImageBitmap(bmpImg);
+                } catch (IOException e) {
+                    Log.e("EditTodoFragment", "onActivityResult: " + e.getLocalizedMessage());
+                }
+            }
+        }
     }
 }

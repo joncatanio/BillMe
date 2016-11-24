@@ -1,5 +1,6 @@
 package com.joncatanio.billme;
 
+import com.joncatanio.billme.model.Account;
 import com.joncatanio.billme.model.Bill;
 import com.joncatanio.billme.model.BillFull;
 import com.joncatanio.billme.model.GroupFull;
@@ -27,8 +28,14 @@ public interface BillMeService {
     @POST("login")
     Observable<Login> login(@Field("username") String username, @Field("password") String password);
 
+    @GET("account/")
+    Observable<Account> getAccount(@Header("Authorization") String authToken);
+
     @GET("bills/")
     Observable<List<Bill>> getBills(@Header("Authorization") String authToken);
+
+    @GET("bills/history/")
+    Observable<List<Bill>> getBillHistory(@Header("Authorization") String authToken);
 
     @GET("bill/{billId}/")
     Observable<BillFull> getBill(@Header("Authorization") String authToken, @Path("billId") int billId);
