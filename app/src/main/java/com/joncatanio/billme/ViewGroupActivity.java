@@ -92,6 +92,8 @@ public class ViewGroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.i("ViewGroupActivity", "add member pressed");
+                Intent intent = new Intent(ViewGroupActivity.this, AddMemberActivity.class);
+                startActivity(intent);
             }
         });
     }

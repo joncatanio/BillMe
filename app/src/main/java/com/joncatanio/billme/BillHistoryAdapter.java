@@ -41,7 +41,7 @@ public class BillHistoryAdapter extends RecyclerView.Adapter<BillHistoryAdapter.
 
     @Override
     public int getItemCount() {
-        return bills.size();
+        return bills == null ? 0 : bills.size();
     }
 
     public static class BillHistoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
