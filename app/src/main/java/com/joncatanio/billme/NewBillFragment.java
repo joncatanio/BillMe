@@ -44,7 +44,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -278,10 +277,12 @@ public class NewBillFragment extends Fragment {
 
         DateTimeFormatter form = DateTimeFormat.forPattern("yyyy-MM-dd");
         requestBody.setDueDate(form.print(dueDate));
+        final Fragment thisFrag = this;
 
         BillMeApi.get()
                 .addBill(BillMeApi.getAuthToken(getActivity()), requestBody)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<NewBillResponse>() {
                     @Override
                     public void onCompleted() {
@@ -296,8 +297,8 @@ public class NewBillFragment extends Fragment {
 
                     @Override
                     public void onNext(NewBillResponse newBillResponse) {
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        startActivity(intent);
+                        Log.i("NewBill", "Off to new activity!");
+                        getFragmentManager().beginTransaction().remove(thisFrag).commit();
                     }
                 });
     }

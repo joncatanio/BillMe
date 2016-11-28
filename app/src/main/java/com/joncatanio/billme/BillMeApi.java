@@ -15,7 +15,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class BillMeApi {
-    private static final String BASE_URL = "http://ec2-54-153-9-233.us-west-1.compute.amazonaws.com/";//"http://10.0.2.2:5000/";
+    private static final String BASE_URL = "http://10.0.2.2:5000/";
     private static final String TOKEN_FILE = "token";
     private static String authToken = null;
     private static int userId;

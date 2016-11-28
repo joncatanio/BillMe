@@ -97,14 +97,6 @@ public class AccountFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
         fetchContent(rootView);
-        Button logout = (Button) rootView.findViewById(R.id.logout_button);
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new File(getActivity().getFilesDir(), "token").delete();
-                BillMeApi.getAuthToken(getActivity());
-            }
-        });
         return rootView;
     }
 
