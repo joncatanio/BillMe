@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -139,10 +140,35 @@ public class GroupsFragment extends Fragment {
     }
 
     private void fetchContent(View rootView) {
-        String authToken = BillMeApi.getAuthToken(getActivity());
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.groups_recycler_view);
+        final String authToken = BillMeApi.getAuthToken(getActivity());
+        final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.groups_recycler_view);
         assert recyclerView != null;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        final SwipeRefreshLayout swipe = (SwipeRefreshLayout) rootView.findViewById(R.id.groups_swipe_refresh);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                groupObserver = new GroupObserver();
+                groupAdapter = new GroupAdapter(groupObserver.getGroups());
+                groupObserver.bind(getActivity(), GroupsFragment.this);
+                groupObserver.groups.clear();
+                BillMeApi.get()
+                        .getGroups(authToken)
+                        .flatMap(new Func1<List<GroupShort>, Observable<GroupShort>>() {
+                            @Override
+                            public Observable<GroupShort> call(List<GroupShort> groups) {
+                                return Observable.from(groups);
+                            }
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(groupObserver);
+                swipe.setRefreshing(false);
+                //groupAdapter.notifyDataSetChanged();
+                recyclerView.setAdapter(groupAdapter);
+            }
+        });
 
         //billObserver = (BillObserver) getActivity().getLastNonConfigurationInstance();
 

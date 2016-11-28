@@ -160,6 +160,7 @@ public class NewGroupFragment extends Fragment {
                 if (groupName.getText().toString().equals("")) {
                     Toast.makeText(getActivity(), "Need Group Name", Toast.LENGTH_SHORT).show();
                     Log.e("Add Group", "No group name specified");
+                    return;
                 }
 
                 NewGroup requestBody = new NewGroup();
@@ -192,8 +193,11 @@ public class NewGroupFragment extends Fragment {
 
                             @Override
                             public void onNext(NewGroupResponse newGroupResponse) {
+                                getActivity().getSupportFragmentManager().beginTransaction().remove(NewGroupFragment.this).commit();
+                                getActivity().getSupportFragmentManager().popBackStack();
                                 Intent intent = new Intent(getContext(), ViewGroupActivity.class);
                                 intent.putExtra(GroupViewHolder.GROUP_ID, newGroupResponse.getGroupId());
+                                //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                             }
                         });
