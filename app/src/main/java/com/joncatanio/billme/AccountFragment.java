@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import com.joncatanio.billme.model.Account;
 import com.joncatanio.billme.model.Bill;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +97,14 @@ public class AccountFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
         fetchContent(rootView);
+        Button logout = (Button) rootView.findViewById(R.id.logout_button);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new File(getActivity().getFilesDir(), "token").delete();
+                BillMeApi.getAuthToken(getActivity());
+            }
+        });
         return rootView;
     }
 
