@@ -49,6 +49,17 @@ public class MainActivity extends AppCompatActivity
 
     public static final String NEW_BILL = "newBill";
     public static final String NEW_GROUP = "newGroup";
+    private Integer currentFragment;
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return currentFragment;
+    }
+
+    @Override
+    public Object getLastCustomNonConfigurationInstance() {
+        return super.getLastCustomNonConfigurationInstance();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,18 +97,22 @@ public class MainActivity extends AppCompatActivity
                         switch ((int)drawerItem.getIdentifier()) {
                             case DASHBOARD:
                                 Log.d(TAG, "dashboard");
+                                currentFragment = DASHBOARD;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new DashboardFragment());
                                 break;
                             case GROUPS:
                                 Log.d(TAG, "groups");
+                                currentFragment = GROUPS;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new GroupsFragment());
                                 break;
                             case ACCOUNT:
                                 Log.d(TAG, "account");
+                                currentFragment = ACCOUNT;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new AccountFragment());
                                 break;
                             case SETTINGS:
                                 Log.d(TAG, "settings");
+                                currentFragment = SETTINGS;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new SettingsFragment());
                                 break;
                             default:
@@ -124,7 +139,42 @@ public class MainActivity extends AppCompatActivity
             drawerLayout.addView(drawer.getSlider());
         }
 
-        fragmentManager.beginTransaction().add(R.id.fragmentLayout, new DashboardFragment()).commit();
+        Integer frag = (Integer) getLastCustomNonConfigurationInstance();
+        if (frag != null) {
+            currentFragment = frag;
+        } else {
+            currentFragment = DASHBOARD;
+        }
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        switch (currentFragment) {
+            case DASHBOARD:
+                Log.d(TAG, "dashboard");
+                currentFragment = DASHBOARD;
+                fragmentTransaction.add(R.id.fragmentLayout, new DashboardFragment());
+                break;
+            case GROUPS:
+                Log.d(TAG, "groups");
+                currentFragment = GROUPS;
+                fragmentTransaction.add(R.id.fragmentLayout, new GroupsFragment());
+                break;
+            case ACCOUNT:
+                Log.d(TAG, "account");
+                currentFragment = ACCOUNT;
+                fragmentTransaction.add(R.id.fragmentLayout, new AccountFragment());
+                break;
+            case SETTINGS:
+                Log.d(TAG, "settings");
+                currentFragment = SETTINGS;
+                fragmentTransaction.add(R.id.fragmentLayout, new SettingsFragment());
+                break;
+            default:
+                Log.d(TAG, "default");
+                fragmentTransaction.add(R.id.fragmentLayout, new DashboardFragment());
+                break;
+        }
+        fragmentTransaction.commit();
+        drawer.setSelection(currentFragment);
     }
 
     @Override
