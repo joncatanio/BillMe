@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity
     public static final String NEW_BILL = "newBill";
     public static final String NEW_GROUP = "newGroup";
     private Integer currentFragment;
+    private long oldBackClick = 0;
+    private static final long BACK_TIMEOUT = 2000;
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
@@ -207,7 +210,17 @@ public class MainActivity extends AppCompatActivity
         if (drawer != null && drawer.isDrawerOpen()) {
             drawer.closeDrawer();
         } else {
-            super.onBackPressed();
+            if (getSharedPreferences("com.joncatanio.billme_preferences", MODE_PRIVATE).getBoolean("doubleBackExit", true)) {
+                long newClick = System.currentTimeMillis();
+                if (newClick - oldBackClick <= BACK_TIMEOUT) {
+                    super.onBackPressed();
+                } else {
+                    oldBackClick = newClick;
+                    Toast.makeText(this, R.string.back_to_exit, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 }
