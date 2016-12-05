@@ -12,6 +12,7 @@
         <!-- MaterialDrawer specific values -->
         <item name="material_drawer_background">@color/colorPrimaryDark</item>
         <item name="material_drawer_primary_text">@color/colorPrimaryText</item>
+        <item name="material_drawer_secondary_text">@color/colorPrimaryText</item>
         <!--<item name="material_drawer_primary_icon">@color/material_drawer_primary_icon</item>
         <item name="material_drawer_secondary_text">@color/material_drawer_secondary_text</item>
         <item name="material_drawer_hint_text">@color/material_drawer_hint_text</item>

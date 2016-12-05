@@ -1,8 +1,8 @@
 package com.joncatanio.billme;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,8 +36,16 @@ public class BillMeApi {
         return sService;
     }
 
+    public static void resetAuthToken(Context context) {
+        authToken = null;
+        new File(context.getFilesDir(), TOKEN_FILE).delete();
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
+
     // If null is returned the user must login and set the auth token.
-    public static String getAuthToken(Context context) {
+    public static String getAuthToken(Activity context) {
         if (authToken == null) {
             try {
                 File file = new File(context.getFilesDir(), TOKEN_FILE);
@@ -50,7 +58,9 @@ public class BillMeApi {
                 } else {
                     // Show login screen and get new token.
                     Intent intent = new Intent(context, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     context.startActivity(intent);
+                    context.finish();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
