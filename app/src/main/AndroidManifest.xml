@@ -13,7 +13,7 @@
         <activity
             android:name=".LoginActivity"
             android:noHistory="true"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleInstance"
@@ -27,7 +27,8 @@
         </activity>
         <activity android:name=".ViewBillActivity" />
         <activity android:name=".ViewGroupActivity" />
-        <activity android:name=".AddMemberActivity"></activity>
+        <activity android:name=".AddMemberActivity" />
+        <activity android:name=".RegisterActivity"></activity>
     </application>
 
 </manifest>

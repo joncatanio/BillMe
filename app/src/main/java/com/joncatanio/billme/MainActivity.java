@@ -1,19 +1,18 @@
 package com.joncatanio.billme;
 
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
-import com.joncatanio.billme.model.Bill;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -21,19 +20,8 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity
     implements DashboardFragment.OnFragmentInteractionListener, GroupsFragment.OnFragmentInteractionListener, AccountFragment.OnFragmentInteractionListener, NewBillFragment.OnFragmentInteractionListener, NewGroupFragment.OnFragmentInteractionListener {
@@ -46,9 +34,23 @@ public class MainActivity extends AppCompatActivity
     private static final int GROUPS = 1;
     private static final int ACCOUNT = 2;
     private static final int SETTINGS = 3;
+    private static final int LOGOUT = 4;
 
     public static final String NEW_BILL = "newBill";
     public static final String NEW_GROUP = "newGroup";
+    private Integer currentFragment;
+    private long oldBackClick = 0;
+    private static final long BACK_TIMEOUT = 2000;
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return currentFragment;
+    }
+
+    @Override
+    public Object getLastCustomNonConfigurationInstance() {
+        return super.getLastCustomNonConfigurationInstance();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,9 @@ public class MainActivity extends AppCompatActivity
                         new PrimaryDrawerItem().withIdentifier(GROUPS).withName("Groups").withIcon(android.R.drawable.ic_menu_add).withSelectedIconColor(accent),
                         new PrimaryDrawerItem().withIdentifier(ACCOUNT).withName("Account").withIcon(android.R.drawable.ic_menu_compass).withSelectedIconColor(accent),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withIdentifier(SETTINGS).withName("Settings").withIcon(android.R.drawable.ic_menu_preferences).withSelectedIconColor(accent)
+                        new PrimaryDrawerItem().withIdentifier(SETTINGS).withName("Settings").withIcon(android.R.drawable.ic_menu_preferences).withSelectedIconColor(accent),
+                        new DividerDrawerItem(),
+                        new SecondaryDrawerItem().withIdentifier(LOGOUT).withName("Log Out").withIcon(android.R.drawable.ic_menu_delete).withSelectable(false)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -86,19 +90,38 @@ public class MainActivity extends AppCompatActivity
                         switch ((int)drawerItem.getIdentifier()) {
                             case DASHBOARD:
                                 Log.d(TAG, "dashboard");
+                                currentFragment = DASHBOARD;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new DashboardFragment());
                                 break;
                             case GROUPS:
                                 Log.d(TAG, "groups");
+                                currentFragment = GROUPS;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new GroupsFragment());
                                 break;
                             case ACCOUNT:
                                 Log.d(TAG, "account");
+                                currentFragment = ACCOUNT;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new AccountFragment());
                                 break;
                             case SETTINGS:
                                 Log.d(TAG, "settings");
+                                currentFragment = SETTINGS;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new SettingsFragment());
+                                break;
+                            case LOGOUT:
+                                Log.d(TAG, "logout");
+                                new AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Log Out")
+                                        .setMessage("Are you sure you want to log out?")
+                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                BillMeApi.resetAuthToken(MainActivity.this);
+                                                finish();
+                                            }
+                                        })
+                                        .setNegativeButton(R.string.no, null)
+                                        .show();
                                 break;
                             default:
                                 Log.d(TAG, "default");
@@ -124,7 +147,42 @@ public class MainActivity extends AppCompatActivity
             drawerLayout.addView(drawer.getSlider());
         }
 
-        fragmentManager.beginTransaction().add(R.id.fragmentLayout, new DashboardFragment()).commit();
+        Integer frag = (Integer) getLastCustomNonConfigurationInstance();
+        if (frag != null) {
+            currentFragment = frag;
+        } else {
+            currentFragment = DASHBOARD;
+        }
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        switch (currentFragment) {
+            case DASHBOARD:
+                Log.d(TAG, "dashboard");
+                currentFragment = DASHBOARD;
+                fragmentTransaction.add(R.id.fragmentLayout, new DashboardFragment());
+                break;
+            case GROUPS:
+                Log.d(TAG, "groups");
+                currentFragment = GROUPS;
+                fragmentTransaction.add(R.id.fragmentLayout, new GroupsFragment());
+                break;
+            case ACCOUNT:
+                Log.d(TAG, "account");
+                currentFragment = ACCOUNT;
+                fragmentTransaction.add(R.id.fragmentLayout, new AccountFragment());
+                break;
+            case SETTINGS:
+                Log.d(TAG, "settings");
+                currentFragment = SETTINGS;
+                fragmentTransaction.add(R.id.fragmentLayout, new SettingsFragment());
+                break;
+            default:
+                Log.d(TAG, "default");
+                fragmentTransaction.add(R.id.fragmentLayout, new DashboardFragment());
+                break;
+        }
+        fragmentTransaction.commit();
+        drawer.setSelection(currentFragment);
     }
 
     @Override
@@ -152,7 +210,17 @@ public class MainActivity extends AppCompatActivity
         if (drawer != null && drawer.isDrawerOpen()) {
             drawer.closeDrawer();
         } else {
-            super.onBackPressed();
+            if (getSharedPreferences("com.joncatanio.billme_preferences", MODE_PRIVATE).getBoolean("doubleBackExit", true)) {
+                long newClick = System.currentTimeMillis();
+                if (newClick - oldBackClick <= BACK_TIMEOUT) {
+                    super.onBackPressed();
+                } else {
+                    oldBackClick = newClick;
+                    Toast.makeText(this, R.string.back_to_exit, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 }
