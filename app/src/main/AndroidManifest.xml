@@ -28,6 +28,7 @@
         <activity android:name=".ViewBillActivity" />
         <activity android:name=".ViewGroupActivity" />
         <activity android:name=".AddMemberActivity" />
+        <activity android:name=".RegisterActivity"></activity>
     </application>
 
 </manifest>

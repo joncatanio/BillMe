@@ -11,6 +11,7 @@
     <string name="login_btn">Go</string>
     <string name="login_header">BillMe</string>
     <string name="days_left">Days Left</string>
+    <string name="register">Register</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
