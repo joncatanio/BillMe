@@ -39,6 +39,8 @@ public class PayerListViewHolder extends RecyclerView.ViewHolder {
         payerName.setText(payer.getName());
         if (payer.getPaid() == 1) {
             payerStatus.setImageDrawable(resources.getDrawable(R.drawable.ic_check_green_24dp, null));
+        } else if (payer.getPending() == 1) {
+            payerStatus.setImageDrawable(resources.getDrawable(R.drawable.ic_access_time_yellow_24dp, null));
         } else {
             payerStatus.setImageDrawable(resources.getDrawable(R.drawable.ic_clear_red_24dp, null));
         }

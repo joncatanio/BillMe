@@ -19,8 +19,15 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/name"
+        android:id="@+id/register_name"
+        android:maxLines="1"
+        android:singleLine="true" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:hint="@string/email"
-        android:id="@+id/email"
+        android:id="@+id/register_email"
         android:inputType="textEmailAddress"
         android:maxLines="1"
         android:singleLine="true" />
@@ -28,14 +35,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/username"
-        android:id="@+id/username"
+        android:id="@+id/register_username"
         android:maxLines="1"
         android:singleLine="true" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/login_hint_pw"
-        android:id="@+id/password"
+        android:id="@+id/register_password"
         android:maxLines="1"
         android:singleLine="true"
         android:inputType="textPassword" />
@@ -43,7 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/repeat_password"
-        android:id="@+id/repeatPassword"
+        android:id="@+id/register_repeatPassword"
         android:maxLines="1"
         android:singleLine="true"
         android:inputType="textPassword" />
@@ -51,6 +58,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/register"
-        android:id="@+id/registerButton"
+        android:id="@+id/register_button"
         android:onClick="register" />
 </LinearLayout>

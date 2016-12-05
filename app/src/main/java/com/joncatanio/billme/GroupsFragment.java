@@ -41,7 +41,6 @@ public class GroupsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private GroupObserver groupObserver;
     private GroupAdapter groupAdapter;
 
     // TODO: Rename and change types of parameters
@@ -140,6 +139,7 @@ public class GroupsFragment extends Fragment {
     }
 
     private void fetchContent(View rootView) {
+        final Fragment self = this;
         final String authToken = BillMeApi.getAuthToken(getActivity());
         final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.groups_recycler_view);
         assert recyclerView != null;
@@ -149,94 +149,74 @@ public class GroupsFragment extends Fragment {
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                groupObserver = new GroupObserver();
-                groupAdapter = new GroupAdapter(groupObserver.getGroups());
-                groupObserver.bind(getActivity(), GroupsFragment.this);
-                groupObserver.groups.clear();
                 BillMeApi.get()
                         .getGroups(authToken)
-                        .flatMap(new Func1<List<GroupShort>, Observable<GroupShort>>() {
-                            @Override
-                            public Observable<GroupShort> call(List<GroupShort> groups) {
-                                return Observable.from(groups);
-                            }
-                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(groupObserver);
+                        .subscribe(new Observer<List<GroupShort>>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                HttpException httpErr = (HttpException) e;
+
+                                if (httpErr.code() == 403) {
+                                    // The user has an invalid/expired token, make them log in.
+                                    Intent intent = new Intent(self.getContext(), LoginActivity.class);
+                                    self.startActivity(intent);
+                                } else {
+                                    Log.e("BillObserver", e.getMessage());
+                                }
+                            }
+
+                            @Override
+                            public void onNext(List<GroupShort> groupShorts) {
+                                if (groupShorts == null) {
+                                    groupAdapter = new GroupAdapter(new ArrayList<GroupShort>());
+                                }
+                                groupAdapter = new GroupAdapter((ArrayList<GroupShort>) groupShorts);
+                                recyclerView.setAdapter(groupAdapter);
+                            }
+                        });
                 swipe.setRefreshing(false);
-                //groupAdapter.notifyDataSetChanged();
-                recyclerView.setAdapter(groupAdapter);
             }
         });
 
-        //billObserver = (BillObserver) getActivity().getLastNonConfigurationInstance();
+        BillMeApi.get()
+                .getGroups(authToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<GroupShort>>() {
+                    @Override
+                    public void onCompleted() {
 
-        if (groupObserver == null) {
-            groupObserver = new GroupObserver();
-            groupAdapter = new GroupAdapter(groupObserver.getGroups());
-            groupObserver.bind(getActivity(), this);
+                    }
 
-            BillMeApi.get()
-                    .getGroups(authToken)
-                    .flatMap(new Func1<List<GroupShort>, Observable<GroupShort>>() {
-                        @Override
-                        public Observable<GroupShort> call(List<GroupShort> groups) {
-                            return Observable.from(groups);
+                    @Override
+                    public void onError(Throwable e) {
+                        HttpException httpErr = (HttpException) e;
+
+                        if (httpErr.code() == 403) {
+                            // The user has an invalid/expired token, make them log in.
+                            Intent intent = new Intent(self.getContext(), LoginActivity.class);
+                            self.startActivity(intent);
+                        } else {
+                            Log.e("BillObserver", e.getMessage());
                         }
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(groupObserver);
-        } else {
-            groupAdapter = new GroupAdapter(groupObserver.getGroups());
-            groupObserver.bind(getActivity(), this);
-        }
+                    }
 
-        recyclerView.setAdapter(groupAdapter);
-    }
-
-    private static class GroupObserver implements Observer<GroupShort> {
-        private FragmentActivity mActivity;
-        private GroupsFragment frag;
-
-        private ArrayList<GroupShort> groups = new ArrayList<>();
-
-        private void bind(FragmentActivity activity, GroupsFragment frag) {
-            this.mActivity = activity;
-            this.frag = frag;
-        }
-
-        private void unbind() {
-            mActivity = null;
-        }
-
-        public ArrayList<GroupShort> getGroups() {
-            return groups;
-        }
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            HttpException httpErr = (HttpException) e;
-
-            if (httpErr.code() == 403) {
-                // The user has an invalid/expired token, make them log in.
-                Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
-                mActivity.startActivity(intent);
-            } else {
-                Log.e("BillObserver", e.getMessage());
-            }
-        }
-
-        @Override
-        public void onNext(GroupShort bill) {
-            int index = groups.size();
-            groups.add(bill);
-            frag.groupAdapter.notifyItemInserted(index);
-        }
+                    @Override
+                    public void onNext(List<GroupShort> groupShorts) {
+                        groupAdapter = new GroupAdapter((ArrayList<GroupShort>) groupShorts);
+                        if (groupShorts == null) {
+                            groupAdapter = new GroupAdapter(new ArrayList<GroupShort>());
+                        }
+                        groupAdapter = new GroupAdapter((ArrayList<GroupShort>) groupShorts);
+                        recyclerView.setAdapter(groupAdapter);
+                    }
+                });
     }
 }

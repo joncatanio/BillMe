@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.joncatanio.billme.model.BillFull;
+import com.joncatanio.billme.model.PayBillResponse;
 import com.joncatanio.billme.model.Payer;
 
 import org.joda.time.DateTime;
@@ -23,6 +24,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import retrofit2.adapter.rxjava.HttpException;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -108,8 +110,14 @@ public class ViewBillActivity extends AppCompatActivity {
         if (thisUser.getPaid() == 1) {
             billBtn.setBackground(getDrawable(R.drawable.custom_button_inactive));
             billBtn.setText("Paid: $" + String.format("%.2f", indivCost));
+            billBtn.setClickable(false);
+        } else if (thisUser.getPending() == 1) {
+            billBtn.setBackground(getDrawable(R.drawable.custom_button_pending));
+            billBtn.setText("Pending: $" + String.format("%.2f", indivCost));
+            billBtn.setClickable(false);
         } else {
             billBtn.setText("Pay: $" + String.format("%.2f", indivCost));
+            billBtn.setClickable(true);
             billBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -129,7 +137,7 @@ public class ViewBillActivity extends AppCompatActivity {
                 .payBill(BillMeApi.getAuthToken(this), billId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Void>() {
+                .subscribe(new Observer<PayBillResponse>() {
 
                     @Override
                     public void onCompleted() {
@@ -143,19 +151,19 @@ public class ViewBillActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(Void aVoid) {
-                        updatePaymentStatus();
+                    public void onNext(PayBillResponse response) {
+                        updatePaymentStatus(response);
                     }
                 });
     }
 
-    private void updatePaymentStatus() {
+    private void updatePaymentStatus(PayBillResponse response) {
         Button billBtn = (Button) findViewById(R.id.view_bill_btn);
         int indexOfThisUser = bill.getPayers().indexOf(thisUser);
 
         float indivCost = Float.parseFloat(bill.getTotalAmt()) / (float) bill.getPayers().size();
         billBtn.setBackground(getDrawable(R.drawable.custom_button_inactive));
-        billBtn.setText("Paid: $" + String.format("%.2f", indivCost));
+        billBtn.setText(response.getStatus() + ": $" + String.format("%.2f", indivCost));
         billBtn.setClickable(false);
         thisUser.setPaid(1);
         adapter.notifyItemChanged(indexOfThisUser);

@@ -17,7 +17,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "paid",
         "owner",
         "profilePic",
-        "email"
+        "email",
+        "pending"
 })
 public class Payer {
 
@@ -35,6 +36,8 @@ public class Payer {
     private String profilePic;
     @JsonProperty("email")
     private String email;
+    @JsonProperty("pending")
+    private Integer pending;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -176,6 +179,26 @@ public class Payer {
     @JsonProperty("email")
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     *
+     * @return
+     * The pending
+     */
+    @JsonProperty("pending")
+    public Integer getPending() {
+        return pending;
+    }
+
+    /**
+     *
+     * @param pending
+     * The pending
+     */
+    @JsonProperty("pending")
+    public void setPending(Integer pending) {
+        this.pending = pending;
     }
 
     @JsonAnyGetter

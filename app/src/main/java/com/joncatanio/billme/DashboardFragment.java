@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.joncatanio.billme.model.Bill;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,6 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private BillObserver billObserver;
     private BillAdapter billAdapter;
 
     // TODO: Rename and change types of parameters
@@ -149,77 +149,43 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
             Intent intent = new Intent(getContext(), LoginActivity.class);
             startActivity(intent);
         }
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.bill_recycler_view);
+        final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.bill_recycler_view);
         assert recyclerView != null;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        //billObserver = (BillObserver) getActivity().getLastNonConfigurationInstance();
+        final Fragment self = this;
+        BillMeApi.get()
+                .getBills(authToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Bill>>() {
+                    @Override
+                    public void onCompleted() {
 
-        if (billObserver == null) {
-            billObserver = new BillObserver();
-            billAdapter = new BillAdapter(billObserver.getBills());
-            billObserver.bind(getActivity(), this);
+                    }
 
-            BillMeApi.get()
-                    .getBills(authToken)
-                    .flatMap(new Func1<List<Bill>, Observable<Bill>>() {
-                        @Override
-                        public Observable<Bill> call(List<Bill> bills) {
-                            return Observable.from(bills);
+                    @Override
+                    public void onError(Throwable e) {
+                        HttpException httpErr = (HttpException) e;
+
+                        if (httpErr.code() == 403) {
+                            // The user has an invalid/expired token, make them log in.
+                            Intent intent = new Intent(self.getContext(), LoginActivity.class);
+                            self.startActivity(intent);
+                        } else {
+                            Log.e("BillObserver", e.getMessage());
                         }
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(billObserver);
-        } else {
-            billAdapter = new BillAdapter(billObserver.getBills());
-            billObserver.bind(getActivity(), this);
-        }
+                    }
 
-        recyclerView.setAdapter(billAdapter);
-    }
-
-    private static class BillObserver implements Observer<Bill> {
-        private FragmentActivity mActivity;
-        private DashboardFragment frag;
-
-        private ArrayList<Bill> bills = new ArrayList<>();
-
-        private void bind(FragmentActivity activity, DashboardFragment frag) {
-            this.mActivity = activity;
-            this.frag = frag;
-        }
-
-        private void unbind() {
-            mActivity = null;
-        }
-
-        public ArrayList<Bill> getBills() {
-            return bills;
-        }
-
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            HttpException httpErr = (HttpException) e;
-
-            if (httpErr.code() == 403) {
-                // The user has an invalid/expired token, make them log in.
-                Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
-                mActivity.startActivity(intent);
-            } else {
-                Log.e("BillObserver", e.getMessage());
-            }
-        }
-
-        @Override
-        public void onNext(Bill bill) {
-            int index = bills.size();
-            bills.add(bill);
-            frag.billAdapter.notifyItemInserted(index);
-        }
+                    @Override
+                    public void onNext(List<Bill> bills) {
+                        if (bills == null) {
+                            billAdapter = new BillAdapter(new ArrayList<Bill>());
+                        } else {
+                            billAdapter = new BillAdapter((ArrayList<Bill>) bills);
+                        }
+                        recyclerView.setAdapter(billAdapter);
+                    }
+                });
     }
 }

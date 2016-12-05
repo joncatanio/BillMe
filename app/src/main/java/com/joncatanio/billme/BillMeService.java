@@ -10,6 +10,7 @@ import com.joncatanio.billme.model.NewBill;
 import com.joncatanio.billme.model.NewBillResponse;
 import com.joncatanio.billme.model.NewGroup;
 import com.joncatanio.billme.model.NewGroupResponse;
+import com.joncatanio.billme.model.PayBillResponse;
 
 import java.util.List;
 
@@ -28,6 +29,11 @@ public interface BillMeService {
     @POST("login")
     Observable<Login> login(@Field("username") String username, @Field("password") String password);
 
+    @FormUrlEncoded
+    @POST("register")
+    Observable<Void> register(@Field("username") String username, @Field("password") String password,
+                              @Field("email") String email, @Field("name") String name);
+
     @GET("account/")
     Observable<Account> getAccount(@Header("Authorization") String authToken);
 
@@ -41,7 +47,7 @@ public interface BillMeService {
     Observable<BillFull> getBill(@Header("Authorization") String authToken, @Path("billId") int billId);
 
     @GET("bills/pay/{billId}/")
-    Observable<Void> payBill(@Header("Authorization") String authToken, @Path("billId") int billId);
+    Observable<PayBillResponse> payBill(@Header("Authorization") String authToken, @Path("billId") int billId);
 
     @POST("bills/add/")
     Observable<NewBillResponse> addBill(@Header("Authorization") String authToken, @Body NewBill body);

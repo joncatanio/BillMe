@@ -1,4 +1,3 @@
-
 package com.joncatanio.billme.model;
 
 import java.util.HashMap;
@@ -20,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "billName",
         "billId",
         "dueDate",
+        "pending",
         "ownerName"
 })
 public class Bill {
@@ -40,6 +40,8 @@ public class Bill {
     private Integer billId;
     @JsonProperty("dueDate")
     private String dueDate;
+    @JsonProperty("pending")
+    private Integer pending;
     @JsonProperty("ownerName")
     private String ownerName;
     @JsonIgnore
@@ -203,6 +205,26 @@ public class Bill {
     @JsonProperty("dueDate")
     public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
+    }
+
+    /**
+     *
+     * @return
+     * The pending
+     */
+    @JsonProperty("pending")
+    public Integer getPending() {
+        return pending;
+    }
+
+    /**
+     *
+     * @param pending
+     * The pending
+     */
+    @JsonProperty("pending")
+    public void setPending(Integer pending) {
+        this.pending = pending;
     }
 
     /**
