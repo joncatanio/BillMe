@@ -46,6 +46,7 @@ public class BillMeApi {
                     InputStreamReader isr = new InputStreamReader(fis);
                     BufferedReader buf = new BufferedReader(isr);
                     authToken = buf.readLine();
+                    Log.i("token", authToken);
                     userId = Integer.parseInt(buf.readLine());
                 } else {
                     // Show login screen and get new token.

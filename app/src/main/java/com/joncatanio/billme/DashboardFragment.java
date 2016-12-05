@@ -144,6 +144,11 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
 
     private void fetchContent(View rootView) {
         String authToken = BillMeApi.getAuthToken(getActivity());
+        if (authToken == null) {
+            // The user has an invalid/expired token, make them log in.
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            startActivity(intent);
+        }
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.bill_recycler_view);
         assert recyclerView != null;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

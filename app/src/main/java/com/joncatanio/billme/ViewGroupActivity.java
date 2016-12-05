@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.joncatanio.billme.model.GroupFull;
 
 import retrofit2.adapter.rxjava.HttpException;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -43,7 +44,7 @@ public class ViewGroupActivity extends AppCompatActivity {
                 .getGroup(authToken, groupId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<GroupFull>() {
+                .subscribe(new Observer<GroupFull>() {
                     @Override
                     public void onCompleted() {
                         // do nothing
