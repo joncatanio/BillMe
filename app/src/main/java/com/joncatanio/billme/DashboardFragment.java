@@ -42,6 +42,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private BillAdapter billAdapter;
+    private Context context;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -112,6 +113,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
 
     @Override
     public void onAttach(Context context) {
+        this.context = context;
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
@@ -170,8 +172,8 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
 
                         if (httpErr.code() == 403) {
                             // The user has an invalid/expired token, make them log in.
-                            Intent intent = new Intent(self.getContext(), LoginActivity.class);
-                            self.startActivity(intent);
+                            Intent intent = new Intent(context, LoginActivity.class);
+                            context.startActivity(intent);
                         } else {
                             Log.e("BillObserver", e.getMessage());
                         }
