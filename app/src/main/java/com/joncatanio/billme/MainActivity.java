@@ -1,6 +1,9 @@
 package com.joncatanio.billme;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -8,11 +11,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.joncatanio.billme.model.Account;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -23,18 +28,29 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import retrofit2.adapter.rxjava.HttpException;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity
-    implements DashboardFragment.OnFragmentInteractionListener, GroupsFragment.OnFragmentInteractionListener, AccountFragment.OnFragmentInteractionListener, NewBillFragment.OnFragmentInteractionListener, NewGroupFragment.OnFragmentInteractionListener {
+    implements DashboardFragment.OnFragmentInteractionListener,
+        PendingFragment.OnFragmentInteractionListener,
+        GroupsFragment.OnFragmentInteractionListener,
+        AccountFragment.OnFragmentInteractionListener,
+        NewBillFragment.OnFragmentInteractionListener,
+        NewGroupFragment.OnFragmentInteractionListener {
     private static final String TAG = "BillMe";
     private Drawer drawer;
     private AccountHeader accountHeader;
     private FragmentManager fragmentManager;
 
     private static final int DASHBOARD = 0;
-    private static final int GROUPS = 1;
-    private static final int ACCOUNT = 2;
-    private static final int SETTINGS = 3;
-    private static final int LOGOUT = 4;
+    private static final int PENDING = 1;
+    private static final int GROUPS = 2;
+    private static final int ACCOUNT = 3;
+    private static final int SETTINGS = 4;
+    private static final int LOGOUT = 5;
 
     public static final String NEW_BILL = "newBill";
     public static final String NEW_GROUP = "newGroup";
@@ -60,14 +76,52 @@ public class MainActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
 
         accountHeader = new AccountHeaderBuilder()
-                .withActivity(this)
+                .withActivity(MainActivity.this)
                 .withSelectionListEnabledForSingleProfile(false)
-                .addProfiles(
+                /*.addProfiles(
                         new ProfileDrawerItem()
-                            .withName("Mark McKinney")
-                            .withEmail("markp.mckinney@gmail.com")
-                )
+                            .withName("")
+                            .withEmail("")
+                )*/
                 .build();
+        BillMeApi.get()
+                .getAccount(BillMeApi.getAuthToken(this))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Account>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e == null || !(e instanceof HttpException)) {
+                            Toast.makeText(MainActivity.this, "An Error Occurred", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        HttpException httpErr = (HttpException) e;
+
+                        if (httpErr.code() == 403) {
+                            // The user has an invalid/expired token, make them log in.
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Log.e("BillObserver", e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onNext(Account account) {
+                        byte[] img = Base64.decode(account.getProfilePic(), Base64.DEFAULT);
+                        Bitmap bmpImg = BitmapFactory.decodeByteArray(img, 0, img.length);
+                        accountHeader.clear();
+                        accountHeader.setActiveProfile(new ProfileDrawerItem()
+                                .withName(account.getName())
+                                .withEmail(account.getEmail())
+                                .withIcon(bmpImg));
+                    }
+                });
 
         int accent = getResources().getColor(R.color.colorAccent);
 
@@ -76,6 +130,7 @@ public class MainActivity extends AppCompatActivity
                 .withAccountHeader(accountHeader)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withIdentifier(DASHBOARD).withName("Dashboard").withIcon(android.R.drawable.ic_menu_manage).withSelectedIconColor(accent).withSelectedIconColorRes(R.color.accent),
+                        new PrimaryDrawerItem().withIdentifier(PENDING).withName("Pending").withIcon(android.R.drawable.ic_menu_recent_history).withSelectedIconColor(accent).withSelectedIconColorRes(R.color.accent),
                         new PrimaryDrawerItem().withIdentifier(GROUPS).withName("Groups").withIcon(android.R.drawable.ic_menu_add).withSelectedIconColor(accent),
                         new PrimaryDrawerItem().withIdentifier(ACCOUNT).withName("Account").withIcon(android.R.drawable.ic_menu_compass).withSelectedIconColor(accent),
                         new DividerDrawerItem(),
@@ -92,6 +147,11 @@ public class MainActivity extends AppCompatActivity
                                 Log.d(TAG, "dashboard");
                                 currentFragment = DASHBOARD;
                                 fragmentTransaction.replace(R.id.fragmentLayout, new DashboardFragment());
+                                break;
+                            case PENDING:
+                                Log.d(TAG, "pending");
+                                currentFragment = PENDING;
+                                fragmentTransaction.replace(R.id.fragmentLayout, new PendingFragment());
                                 break;
                             case GROUPS:
                                 Log.d(TAG, "groups");
@@ -160,6 +220,11 @@ public class MainActivity extends AppCompatActivity
                 Log.d(TAG, "dashboard");
                 currentFragment = DASHBOARD;
                 fragmentTransaction.add(R.id.fragmentLayout, new DashboardFragment());
+                break;
+            case PENDING:
+                Log.d(TAG, "pending");
+                currentFragment = PENDING;
+                fragmentTransaction.add(R.id.fragmentLayout, new PendingFragment());
                 break;
             case GROUPS:
                 Log.d(TAG, "groups");
