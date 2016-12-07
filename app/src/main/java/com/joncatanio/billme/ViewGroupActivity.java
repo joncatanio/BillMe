@@ -1,5 +1,6 @@
 package com.joncatanio.billme;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,13 +24,18 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class ViewGroupActivity extends AppCompatActivity {
+    public static final int ADD_GROUP_MEMBER = 52;
+    public static final String GROUP_ID = "com.joncatanio.billme.groupid";
+    private int groupId;
+    private GroupMemberAdapter adapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_group);
 
         Intent intent = getIntent();
-        int groupId = intent.getIntExtra(GroupViewHolder.GROUP_ID, -1);
+        groupId = intent.getIntExtra(GroupViewHolder.GROUP_ID, -1);
         if (groupId == -1) {
             Log.e("ViewGroupActivity", "No index received from intent");
         }
@@ -85,7 +91,7 @@ public class ViewGroupActivity extends AppCompatActivity {
 
         // Setup recycler view for group members
         groupMembers.setLayoutManager(new LinearLayoutManager(this));
-        GroupMemberAdapter adapter = new GroupMemberAdapter(group.getMembers(), getResources());
+        adapter = new GroupMemberAdapter(group.getMembers(), getResources());
         groupMembers.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -94,8 +100,17 @@ public class ViewGroupActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.i("ViewGroupActivity", "add member pressed");
                 Intent intent = new Intent(ViewGroupActivity.this, AddMemberActivity.class);
-                startActivity(intent);
+                intent.putExtra(GROUP_ID, groupId);
+                startActivityForResult(intent, ADD_GROUP_MEMBER);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // resultCode was always returning 0 so screw it.
+        if (requestCode == ADD_GROUP_MEMBER) {
+            fetchGroupData(groupId);
+        }
     }
 }

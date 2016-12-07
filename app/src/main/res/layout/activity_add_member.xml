@@ -11,13 +11,41 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.joncatanio.billme.AddMemberActivity">
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add a Group Member:"
-        android:textSize="22sp" />
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/add_member_recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Add Group Member"
+        android:gravity="center_horizontal"
+        android:textSize="34sp"
+        android:fontFamily="sans-serif-light"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:weightSum="100">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="30"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Username or Email:"/>
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="70"
+            android:id="@+id/add_group_mem_username"/>
+    </LinearLayout>
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textColor="@color/buttonText"
+        android:text="Add"
+        android:gravity="center"
+        android:background="@drawable/custom_button"
+        android:fontFamily="sans-serif-medium"
+        android:id="@+id/add_group_mem_btn"/>
 
 </LinearLayout>

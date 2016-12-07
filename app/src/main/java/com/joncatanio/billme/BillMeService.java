@@ -1,6 +1,7 @@
 package com.joncatanio.billme;
 
 import com.joncatanio.billme.model.Account;
+import com.joncatanio.billme.model.AddMemberRequest;
 import com.joncatanio.billme.model.Bill;
 import com.joncatanio.billme.model.BillFull;
 import com.joncatanio.billme.model.GroupFull;
@@ -60,4 +61,7 @@ public interface BillMeService {
 
     @GET("group/{groupId}/")
     Observable<GroupFull> getGroup(@Header("Authorization") String authToken, @Path("groupId") int groupId);
+
+    @POST("groups/addMember/")
+    Observable<Void> addGroupMember(@Header("Authorization") String authToken, @Body AddMemberRequest body);
 }

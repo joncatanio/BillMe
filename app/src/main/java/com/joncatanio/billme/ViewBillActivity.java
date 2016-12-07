@@ -64,6 +64,10 @@ public class ViewBillActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
+                        if (e == null || !(e instanceof HttpException)) {
+                            Toast.makeText(getApplicationContext(), "An Error Occurred", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         HttpException httpErr = (HttpException) e;
 
                         if (httpErr.code() == 403) {
