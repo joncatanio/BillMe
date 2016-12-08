@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:weightSum="100"
     android:background="@drawable/list_background"
-    android:clickable="true">
+    android:clickable="true"
+    android:longClickable="true">
 
     <LinearLayout
         android:orientation="vertical"

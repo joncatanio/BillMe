@@ -32,7 +32,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class PendingAdapter extends RecyclerView.Adapter<PendingAdapter.PendingViewHolder> {
-    List<PendingPayment> pendingPayments;
+    public List<PendingPayment> pendingPayments;
     private Activity activity;
 
     public PendingAdapter(List<PendingPayment> pendingPayments, Activity activity) {
@@ -79,8 +79,8 @@ public class PendingAdapter extends RecyclerView.Adapter<PendingAdapter.PendingV
             acceptBtn = (Button) itemView.findViewById(R.id.pending_accept_btn);
         }
 
-        private void notifyAdapter() {
-            int index = getAdapterPosition();
+        private void notifyAdapter(PendingPayment payment) {
+            int index = adapter.pendingPayments.indexOf(payment);
             adapter.pendingPayments.remove(index);
             adapter.notifyItemChanged(index);
         }
@@ -133,7 +133,7 @@ public class PendingAdapter extends RecyclerView.Adapter<PendingAdapter.PendingV
 
                                 @Override
                                 public void onNext(Void aVoid) {
-                                    notifyAdapter();
+                                    notifyAdapter(pendingPayment);
                                 }
                             });
                 }

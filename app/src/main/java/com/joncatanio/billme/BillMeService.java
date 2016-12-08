@@ -61,6 +61,9 @@ public interface BillMeService {
     @POST("bills/add/")
     Observable<NewBillResponse> addBill(@Header("Authorization") String authToken, @Body NewBill body);
 
+    @GET("bills/delete/{billId}/")
+    Observable<Void> deleteBill(@Header("Authorization") String authToken, @Path("billId") int billId);
+
     @GET("groups/")
     Observable<List<GroupShort>> getGroups(@Header("Authorization") String authToken);
 

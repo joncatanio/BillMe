@@ -9,7 +9,7 @@ import com.joncatanio.billme.model.Bill;
 import java.util.ArrayList;
 
 public class BillAdapter extends RecyclerView.Adapter<BillViewHolder> {
-    private ArrayList<Bill> bills;
+    public ArrayList<Bill> bills;
 
     public BillAdapter(ArrayList<Bill> bills) {
         this.bills = bills;
@@ -22,7 +22,7 @@ public class BillAdapter extends RecyclerView.Adapter<BillViewHolder> {
 
     @Override
     public BillViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new BillViewHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
+        return new BillViewHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false), this);
     }
 
     @Override

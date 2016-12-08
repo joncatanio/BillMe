@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.joncatanio.billme.model.Bill;
 
@@ -168,6 +169,10 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
 
                     @Override
                     public void onError(Throwable e) {
+                        if (e == null || !(e instanceof  HttpException)) {
+                            Toast.makeText(getContext(), "An Error Occurred", Toast.LENGTH_SHORT);
+                            return;
+                        }
                         HttpException httpErr = (HttpException) e;
 
                         if (httpErr.code() == 403) {

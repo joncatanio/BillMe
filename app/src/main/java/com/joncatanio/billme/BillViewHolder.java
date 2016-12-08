@@ -1,11 +1,14 @@
 package com.joncatanio.billme;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.joncatanio.billme.model.Bill;
 
@@ -18,8 +21,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+import retrofit2.adapter.rxjava.HttpException;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
     public final static String BILL_ID = "com.joncatanio.billme.BILL_ID";
+    BillAdapter adapter;
     public Bill listItem;
     private TextView billName;
     private TextView billCost;
@@ -27,10 +36,12 @@ public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private TextView remainingDays;
     private TextView daysLeftText;
 
-    public BillViewHolder(View itemView) {
+    public BillViewHolder(View itemView, BillAdapter adapter) {
         super(itemView);
         itemView.setOnClickListener(this);
+        itemView.setOnLongClickListener(this);
 
+        this.adapter = adapter;
         billName = (TextView) itemView.findViewById(R.id.list_bill_name);
         billCost = (TextView) itemView.findViewById(R.id.list_bill_cost);
         billGroup = (TextView) itemView.findViewById(R.id.list_bill_group);
@@ -78,5 +89,61 @@ public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         Intent i = new Intent(view.getContext(), ViewBillActivity.class);
         i.putExtra(BILL_ID, listItem.getBillId());
         view.getContext().startActivity(i);
+    }
+
+    @Override
+    public boolean onLongClick(final View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setMessage("You are about to delete this bill")
+                .setTitle("Delete Bill")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Passing null to context to avoid getting an activity here, there should
+                        // be a valid auth token at this point.
+                        BillMeApi.get()
+                                .deleteBill(BillMeApi.getAuthToken(null), listItem.getBillId())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Observer<Void>() {
+                                    @Override
+                                    public void onCompleted() {
+
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        if (e == null || !(e instanceof HttpException)) {
+                                            Toast.makeText(view.getContext(), "An Error Occurred", Toast.LENGTH_SHORT);
+                                            return;
+                                        }
+
+                                        HttpException exp = (HttpException) e;
+                                        if (exp.code() == 403) {
+                                            new AlertDialog.Builder(view.getContext())
+                                                    .setTitle("Sorry!")
+                                                    .setMessage("You don't have permission to delete this bill or" +
+                                                            " there are pending payments towards this bill.")
+                                                    .show();
+                                            return;
+                                        }
+                                        Toast.makeText(view.getContext(), "Oops, something went wrong", Toast.LENGTH_SHORT);
+                                    }
+
+                                    @Override
+                                    public void onNext(Void aVoid) {
+                                        adapter.bills.remove(listItem);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).create().show();
+        return true;
     }
 }
