@@ -71,10 +71,7 @@ public class AddMemberActivity extends AppCompatActivity {
                         }
                         HttpException exp = (HttpException) e;
 
-                        if (exp.code() == 204) {
-                            Toast.makeText(self, "No user found", Toast.LENGTH_SHORT);
-                            return;
-                        } else if (exp.code() == 403) {
+                        if (exp.code() == 403) {
                             Toast.makeText(self, "You do not have permission to add members", Toast.LENGTH_SHORT);
                             return;
                         }

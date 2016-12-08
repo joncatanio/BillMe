@@ -1,5 +1,6 @@
 package com.joncatanio.billme;
 
+import com.joncatanio.billme.model.AcceptPaymentRequest;
 import com.joncatanio.billme.model.Account;
 import com.joncatanio.billme.model.AddMemberRequest;
 import com.joncatanio.billme.model.Bill;
@@ -12,6 +13,7 @@ import com.joncatanio.billme.model.NewBillResponse;
 import com.joncatanio.billme.model.NewGroup;
 import com.joncatanio.billme.model.NewGroupResponse;
 import com.joncatanio.billme.model.PayBillResponse;
+import com.joncatanio.billme.model.PendingPayment;
 
 import java.util.List;
 
@@ -47,8 +49,14 @@ public interface BillMeService {
     @GET("bill/{billId}/")
     Observable<BillFull> getBill(@Header("Authorization") String authToken, @Path("billId") int billId);
 
+    @GET("bills/pending/")
+    Observable<List<PendingPayment>> getPendingPayments(@Header("Authorization") String authToken);
+
     @GET("bills/pay/{billId}/")
     Observable<PayBillResponse> payBill(@Header("Authorization") String authToken, @Path("billId") int billId);
+
+    @POST("bills/accept/")
+    Observable<Void> acceptPayment(@Header("Authorization") String authToken, @Body AcceptPaymentRequest body);
 
     @POST("bills/add/")
     Observable<NewBillResponse> addBill(@Header("Authorization") String authToken, @Body NewBill body);

@@ -4,9 +4,22 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.joncatanio.billme.model.PendingPayment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.adapter.rxjava.HttpException;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -64,7 +77,56 @@ public class PendingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_pending, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_pending, container, false);
+
+        fetchContent(rootView);
+
+        return rootView;
+    }
+
+    private void fetchContent(final View rootView) {
+        BillMeApi.get()
+                .getPendingPayments(BillMeApi.getAuthToken(getActivity()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<PendingPayment>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e == null || !(e instanceof HttpException)) {
+                            Toast.makeText(getContext(), "An Error Has Occurred", Toast.LENGTH_LONG);
+                            return;
+                        }
+
+                        HttpException exp = (HttpException) e;
+                        if (exp.code() == 403) {
+                            Toast.makeText(getContext(), "Not permitted", Toast.LENGTH_SHORT);
+                            return;
+                        }
+                        Toast.makeText(getContext(), "Oops, something went wrong", Toast.LENGTH_SHORT);
+                        return;
+                    }
+
+                    @Override
+                    public void onNext(List<PendingPayment> pendingPayments) {
+                        setupView(rootView, pendingPayments);
+                    }
+                });
+    }
+
+    private void setupView(View rootView, List<PendingPayment> pendingPayments) {
+        RecyclerView rc = (RecyclerView) rootView.findViewById(R.id.pending_recycler_view);
+        rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        if (pendingPayments == null) {
+            rc.setAdapter(new PendingAdapter(new ArrayList<PendingPayment>(), getActivity()));
+        } else {
+            rc.setAdapter(new PendingAdapter(pendingPayments, getActivity()));
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
