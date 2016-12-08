@@ -70,16 +70,16 @@ public class BillMeApi {
         return authToken;
     }
 
-    public static void setAuthToken(String token, Integer userId, Context context) {
+    public static void setAuthToken(String token, Integer uid, Context context) {
         FileOutputStream outstream;
         authToken = token;
-        userId = userId;
+        userId = uid;
 
         try {
             outstream = context.openFileOutput(TOKEN_FILE, Context.MODE_PRIVATE);
             outstream.write(token.getBytes());
             outstream.write("\n".getBytes());
-            outstream.write(userId.toString().getBytes());
+            outstream.write(uid.toString().getBytes());
             outstream.close();
         } catch (Exception e) {
             e.printStackTrace();
