@@ -166,10 +166,17 @@ public class ViewBillActivity extends AppCompatActivity {
         int indexOfThisUser = bill.getPayers().indexOf(thisUser);
 
         float indivCost = Float.parseFloat(bill.getTotalAmt()) / (float) bill.getPayers().size();
-        billBtn.setBackground(getDrawable(R.drawable.custom_button_inactive));
-        billBtn.setText(response.getStatus() + ": $" + String.format("%.2f", indivCost));
-        billBtn.setClickable(false);
-        thisUser.setPaid(1);
+        if (response.getStatus().equals("Paid")) {
+            billBtn.setBackground(getDrawable(R.drawable.custom_button_inactive));
+            billBtn.setText("Paid: $" + String.format("%.2f", indivCost));
+            billBtn.setClickable(false);
+            thisUser.setPaid(1);
+        } else if (response.getStatus().equals("Pending")) {
+            billBtn.setBackground(getDrawable(R.drawable.custom_button_pending));
+            billBtn.setText("Pending: $" + String.format("%.2f", indivCost));
+            billBtn.setClickable(false);
+            thisUser.setPending(1);
+        }
         adapter.notifyItemChanged(indexOfThisUser);
     }
 }

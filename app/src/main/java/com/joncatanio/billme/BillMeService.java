@@ -2,6 +2,7 @@ package com.joncatanio.billme;
 
 import com.joncatanio.billme.model.AcceptPaymentRequest;
 import com.joncatanio.billme.model.Account;
+import com.joncatanio.billme.model.AccountUpdateRequest;
 import com.joncatanio.billme.model.AddMemberRequest;
 import com.joncatanio.billme.model.Bill;
 import com.joncatanio.billme.model.BillFull;
@@ -39,6 +40,9 @@ public interface BillMeService {
 
     @GET("account/")
     Observable<Account> getAccount(@Header("Authorization") String authToken);
+
+    @POST("account/update/")
+    Observable<Void> updateAccount(@Header("Authorization") String authToken, @Body AccountUpdateRequest body);
 
     @GET("bills/")
     Observable<List<Bill>> getBills(@Header("Authorization") String authToken);

@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity
         NewGroupFragment.OnFragmentInteractionListener {
     private static final String TAG = "BillMe";
     private Drawer drawer;
-    private AccountHeader accountHeader;
+    public AccountHeader accountHeader;
     private FragmentManager fragmentManager;
 
     private static final int DASHBOARD = 0;

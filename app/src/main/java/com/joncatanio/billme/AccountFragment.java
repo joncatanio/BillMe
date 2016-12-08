@@ -20,15 +20,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.joncatanio.billme.model.Account;
+import com.joncatanio.billme.model.AccountUpdateRequest;
 import com.joncatanio.billme.model.Bill;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.adapter.rxjava.HttpException;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -164,9 +169,10 @@ public class AccountFragment extends Fragment {
 
     private void populateAccountInfo(final View rootView, final Account account) {
         userImg = (ImageView) rootView.findViewById(R.id.account_profile_pic);
-        EditText userFullname = (EditText) rootView.findViewById(R.id.account_fullname);
-        TextView userEmail = (TextView) rootView.findViewById(R.id.account_email);
-        EditText username = (EditText) rootView.findViewById(R.id.account_username);
+        final EditText userFullname = (EditText) rootView.findViewById(R.id.account_fullname);
+        final TextView userEmail = (TextView) rootView.findViewById(R.id.account_email);
+        final EditText username = (EditText) rootView.findViewById(R.id.account_username);
+        Button saveBtn = (Button) rootView.findViewById(R.id.account_save_btn);
 
         byte[] img = Base64.decode(account.getProfilePic(), Base64.DEFAULT);
         bmpImg = BitmapFactory.decodeByteArray(img, 0, img.length);
@@ -204,6 +210,56 @@ public class AccountFragment extends Fragment {
                         populatePaymentHistory(rootView, account, (ArrayList<Bill>) bills);
                     }
                 });
+
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AccountUpdateRequest body = new AccountUpdateRequest();
+
+                body.setUsername(username.getText().toString().trim());
+                body.setEmail(userEmail.getText().toString().trim());
+                body.setName(userFullname.getText().toString().trim());
+
+                if (bmpImg == null) {
+                    body.setUserImg("");
+                } else {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bmpImg.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    body.setUserImg(Base64.encodeToString(byteArray, Base64.DEFAULT));
+                }
+
+                BillMeApi.get()
+                        .updateAccount(BillMeApi.getAuthToken(getActivity()), body)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Void>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                if (e == null || !(e instanceof HttpException)) {
+                                    Toast.makeText(getContext(), "An Error Occurred", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                HttpException exp = (HttpException) e;
+                                if (exp.code() == 403) {
+                                    Toast.makeText(getContext(), "Session expired please log back in", Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                Toast.makeText(getContext(), "Oops, something went wrong", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onNext(Void aVoid) {
+                                Toast.makeText(getContext(), "Account Saved", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        });
     }
 
     private void populatePaymentHistory(View rootView, Account account, ArrayList<Bill> bills) {
