@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
                 .withActivity(this)
                 .withAccountHeader(accountHeader)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withIdentifier(DASHBOARD).withName("Dashboard").withIcon(android.R.drawable.ic_menu_manage).withSelectedIconColor(accent).withSelectedIconColorRes(R.color.accent),
+                        new PrimaryDrawerItem().withIdentifier(DASHBOARD).withName("Dashboard").withIcon(android.R.drawable.ic_menu_info_details).withSelectedIconColor(accent).withSelectedIconColorRes(R.color.accent),
                         new PrimaryDrawerItem().withIdentifier(PENDING).withName("Pending").withIcon(android.R.drawable.ic_menu_recent_history).withSelectedIconColor(accent).withSelectedIconColorRes(R.color.accent),
                         new PrimaryDrawerItem().withIdentifier(GROUPS).withName("Groups").withIcon(android.R.drawable.ic_menu_add).withSelectedIconColor(accent),
                         new PrimaryDrawerItem().withIdentifier(ACCOUNT).withName("Account").withIcon(android.R.drawable.ic_menu_compass).withSelectedIconColor(accent),
