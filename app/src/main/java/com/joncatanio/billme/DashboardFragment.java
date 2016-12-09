@@ -170,7 +170,7 @@ public class DashboardFragment extends android.support.v4.app.Fragment {
                     @Override
                     public void onError(Throwable e) {
                         if (e == null || !(e instanceof  HttpException)) {
-                            Toast.makeText(getContext(), "An Error Occurred", Toast.LENGTH_SHORT);
+                            Toast.makeText(getContext(), "An Error Occurred", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         HttpException httpErr = (HttpException) e;

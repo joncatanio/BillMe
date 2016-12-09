@@ -118,17 +118,16 @@ public class PendingAdapter extends RecyclerView.Adapter<PendingAdapter.PendingV
                                 @Override
                                 public void onError(Throwable e) {
                                     if (e == null || !(e instanceof HttpException)) {
-                                        Toast.makeText(activity, "An Error Occurred", Toast.LENGTH_SHORT);
+                                        Toast.makeText(activity, "An Error Occurred", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
 
                                     HttpException exp = (HttpException) e;
                                     if (exp.code() == 403) {
-                                        Toast.makeText(activity, "Unauthorized access", Toast.LENGTH_SHORT);
+                                        Toast.makeText(activity, "Unauthorized access", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
-                                    Toast.makeText(activity, "Oops, something went wrong", Toast.LENGTH_SHORT);
-                                    return;
+                                    Toast.makeText(activity, "Oops, something went wrong", Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
