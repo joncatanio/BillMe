@@ -114,7 +114,7 @@ public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                                     @Override
                                     public void onError(Throwable e) {
                                         if (e == null || !(e instanceof HttpException)) {
-                                            Toast.makeText(view.getContext(), "An Error Occurred", Toast.LENGTH_SHORT);
+                                            Toast.makeText(view.getContext(), "An Error Occurred", Toast.LENGTH_SHORT).show();
                                             return;
                                         }
 
@@ -127,7 +127,7 @@ public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                                                     .show();
                                             return;
                                         }
-                                        Toast.makeText(view.getContext(), "Oops, something went wrong", Toast.LENGTH_SHORT);
+                                        Toast.makeText(view.getContext(), "Oops, something went wrong", Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override

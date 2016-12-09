@@ -38,7 +38,7 @@ public class AddMemberActivity extends AppCompatActivity {
                 String content = namemail.getText().toString().trim();
 
                 if (content == null || content.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Field can't be empty", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "Field can't be empty", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 requestAddMember(content, groupId);
@@ -66,17 +66,16 @@ public class AddMemberActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable e) {
                         if (e == null || !(e instanceof HttpException)) {
-                            Toast.makeText(self, "An Error Has Occurred", Toast.LENGTH_SHORT);
+                            Toast.makeText(self, "An Error Has Occurred", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         HttpException exp = (HttpException) e;
 
                         if (exp.code() == 403) {
-                            Toast.makeText(self, "You do not have permission to add members", Toast.LENGTH_SHORT);
+                            Toast.makeText(self, "You do not have permission to add members", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        Toast.makeText(self, "Oops, something went wrong", Toast.LENGTH_LONG);
-                        return;
+                        Toast.makeText(self, "Oops, something went wrong", Toast.LENGTH_LONG).show();
                     }
 
                     @Override

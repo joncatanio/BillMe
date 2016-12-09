@@ -98,17 +98,16 @@ public class PendingFragment extends Fragment {
                     @Override
                     public void onError(Throwable e) {
                         if (e == null || !(e instanceof HttpException)) {
-                            Toast.makeText(getContext(), "An Error Has Occurred", Toast.LENGTH_LONG);
+                            Toast.makeText(getContext(), "An Error Has Occurred", Toast.LENGTH_LONG).show();
                             return;
                         }
 
                         HttpException exp = (HttpException) e;
                         if (exp.code() == 403) {
-                            Toast.makeText(getContext(), "Not permitted", Toast.LENGTH_SHORT);
+                            Toast.makeText(getContext(), "Not permitted", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        Toast.makeText(getContext(), "Oops, something went wrong", Toast.LENGTH_SHORT);
-                        return;
+                        Toast.makeText(getContext(), "Oops, something went wrong", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

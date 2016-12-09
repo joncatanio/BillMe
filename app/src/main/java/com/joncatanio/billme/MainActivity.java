@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
 
     public static final String NEW_BILL = "newBill";
     public static final String NEW_GROUP = "newGroup";
+    public static final String UPDATE_PROFILE = "updateProfile";
     private Integer currentFragment;
     private long oldBackClick = 0;
     private static final long BACK_TIMEOUT = 2000;
@@ -84,44 +85,7 @@ public class MainActivity extends AppCompatActivity
                             .withEmail("")
                 )*/
                 .build();
-        BillMeApi.get()
-                .getAccount(BillMeApi.getAuthToken(this))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Account>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (e == null || !(e instanceof HttpException)) {
-                            Toast.makeText(MainActivity.this, "An Error Occurred", Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        HttpException httpErr = (HttpException) e;
-
-                        if (httpErr.code() == 403) {
-                            // The user has an invalid/expired token, make them log in.
-                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                        } else {
-                            Log.e("BillObserver", e.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onNext(Account account) {
-                        byte[] img = Base64.decode(account.getProfilePic(), Base64.DEFAULT);
-                        Bitmap bmpImg = BitmapFactory.decodeByteArray(img, 0, img.length);
-                        accountHeader.clear();
-                        accountHeader.setActiveProfile(new ProfileDrawerItem()
-                                .withName(account.getName())
-                                .withEmail(account.getEmail())
-                                .withIcon(bmpImg));
-                    }
-                });
+        updateAccountHeader();
 
         int accent = getResources().getColor(R.color.colorAccent);
 
@@ -250,20 +214,64 @@ public class MainActivity extends AppCompatActivity
         drawer.setSelection(currentFragment);
     }
 
+    private void updateAccountHeader() {
+        BillMeApi.get()
+                .getAccount(BillMeApi.getAuthToken(this))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Account>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e == null || !(e instanceof HttpException)) {
+                            Toast.makeText(MainActivity.this, "An Error Occurred", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        HttpException httpErr = (HttpException) e;
+
+                        if (httpErr.code() == 403) {
+                            // The user has an invalid/expired token, make them log in.
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Log.e("BillObserver", e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onNext(Account account) {
+                        byte[] img = Base64.decode(account.getProfilePic(), Base64.DEFAULT);
+                        Bitmap bmpImg = BitmapFactory.decodeByteArray(img, 0, img.length);
+                        accountHeader.clear();
+                        accountHeader.setActiveProfile(new ProfileDrawerItem()
+                                .withName(account.getName())
+                                .withEmail(account.getEmail())
+                                .withIcon(bmpImg));
+                    }
+                });
+    }
+
     @Override
     public void onFragmentInteraction(Uri uri) {
         switch (uri.getFragment()) {
             case NEW_BILL:
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragmentLayout, new NewBillFragment());
+                fragmentTransaction.replace(R.id.fragmentLayout, new NewBillFragment(), NEW_BILL);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
             case NEW_GROUP:
                 FragmentTransaction fragmentTransaction2 = fragmentManager.beginTransaction();
-                fragmentTransaction2.replace(R.id.fragmentLayout, new NewGroupFragment());
+                fragmentTransaction2.replace(R.id.fragmentLayout, new NewGroupFragment(), NEW_GROUP);
                 fragmentTransaction2.addToBackStack(null);
                 fragmentTransaction2.commit();
+                break;
+            case UPDATE_PROFILE:
+                updateAccountHeader();
                 break;
             default:
                 break;
@@ -275,16 +283,20 @@ public class MainActivity extends AppCompatActivity
         if (drawer != null && drawer.isDrawerOpen()) {
             drawer.closeDrawer();
         } else {
-            if (getSharedPreferences("com.joncatanio.billme_preferences", MODE_PRIVATE).getBoolean("doubleBackExit", true)) {
-                long newClick = System.currentTimeMillis();
-                if (newClick - oldBackClick <= BACK_TIMEOUT) {
-                    super.onBackPressed();
-                } else {
-                    oldBackClick = newClick;
-                    Toast.makeText(this, R.string.back_to_exit, Toast.LENGTH_SHORT).show();
-                }
-            } else {
+            if (fragmentManager.findFragmentByTag(NEW_BILL) != null || fragmentManager.findFragmentByTag(NEW_GROUP) != null) {
                 super.onBackPressed();
+            } else {
+                if (getSharedPreferences("com.joncatanio.billme_preferences", MODE_PRIVATE).getBoolean("doubleBackExit", true)) {
+                    long newClick = System.currentTimeMillis();
+                    if (newClick - oldBackClick <= BACK_TIMEOUT) {
+                        super.onBackPressed();
+                    } else {
+                        oldBackClick = newClick;
+                        Toast.makeText(this, R.string.back_to_exit, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    super.onBackPressed();
+                }
             }
         }
     }
