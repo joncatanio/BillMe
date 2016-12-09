@@ -75,8 +75,8 @@ public class BillViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             remainingDays.setTextColor(Color.parseColor("#E57373"));
             daysLeftText.setTextColor(Color.parseColor("#E57373"));
         } else if (daysLeft >= 5 && daysLeft <= 14) {
-            remainingDays.setTextColor(Color.parseColor("#FFF176"));
-            daysLeftText.setTextColor(Color.parseColor("#FFF176"));
+            remainingDays.setTextColor(Color.parseColor("#FBC02D"));
+            daysLeftText.setTextColor(Color.parseColor("#FBC02D"));
         } else {
             remainingDays.setTextColor(Color.parseColor("#81C784"));
             daysLeftText.setTextColor(Color.parseColor("#81C784"));
