@@ -9,7 +9,7 @@
         android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:paddingBottom="5dp"
             android:orientation="vertical">
             <ImageView
@@ -40,20 +40,6 @@
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/account_username"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center"
-                android:background="#FFE0E0E0"
-                android:textColor="#8D000000"
-                android:fontFamily="sans-serif-light"
-                android:text="Payment History"/>
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:paddingBottom="5dp"
-                android:id="@+id/account_bill_history">
-            </android.support.v7.widget.RecyclerView>
             <Button
                 android:layout_width="200dp"
                 android:layout_height="50dp"
@@ -65,7 +51,20 @@
                 android:gravity="center"
                 android:background="@drawable/custom_button"
                 android:fontFamily="sans-serif-medium"
-                android:id="@+id/account_save_btn"/>
+                android:id="@+id/account_save_btn"
+                android:layout_marginBottom="5dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:background="#FFE0E0E0"
+                android:textColor="#8D000000"
+                android:fontFamily="sans-serif-light"
+                android:text="Payment History"/>
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/account_bill_history" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
