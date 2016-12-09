@@ -18,8 +18,7 @@
             android:id="@+id/new_group_img"/>
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="15"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="32sp"
             android:textColor="#DA000000"
@@ -28,8 +27,7 @@
             android:id="@+id/new_group_name"/>
         <Button
             android:layout_width="200dp"
-            android:layout_height="0dp"
-            android:layout_weight="10"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Add Group"
             android:textSize="18sp"
