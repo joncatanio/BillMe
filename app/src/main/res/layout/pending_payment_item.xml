@@ -8,52 +8,51 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="100"
-        android:layout_height="match_parent">
+        android:layout_margin="2dp">
 
         <ImageView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="30"
+            android:layout_weight="20"
             android:id="@+id/pending_user_img"/>
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="50"
+            android:layout_height="wrap_content"
+            android:layout_weight="60"
             android:weightSum="100"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginLeft="5dp">
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="40"
+                android:layout_height="wrap_content"
                 android:text="Bill Name"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:textColor="#DA000000"
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/pending_bill_name"/>
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="30"
+                android:layout_height="wrap_content"
                 android:text="Jon Catanio"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="#DA000000"
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/pending_username"/>
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="30"
+                android:layout_height="wrap_content"
                 android:text="Group name"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textColor="#8D000000"
                 android:id="@+id/pending_group_name"/>
         </LinearLayout>
         <Button
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_weight="20"
             android:layout_gravity="center"
             android:textAlignment="center"
