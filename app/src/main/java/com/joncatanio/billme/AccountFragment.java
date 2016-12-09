@@ -256,6 +256,7 @@ public class AccountFragment extends Fragment {
                             @Override
                             public void onNext(Void aVoid) {
                                 Toast.makeText(getContext(), "Account Saved", Toast.LENGTH_SHORT).show();
+                                mListener.onFragmentInteraction(new Uri.Builder().fragment(MainActivity.UPDATE_PROFILE).build());
                             }
                         });
             }
