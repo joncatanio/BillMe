@@ -260,13 +260,13 @@ public class MainActivity extends AppCompatActivity
         switch (uri.getFragment()) {
             case NEW_BILL:
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragmentLayout, new NewBillFragment());
+                fragmentTransaction.replace(R.id.fragmentLayout, new NewBillFragment(), NEW_BILL);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
             case NEW_GROUP:
                 FragmentTransaction fragmentTransaction2 = fragmentManager.beginTransaction();
-                fragmentTransaction2.replace(R.id.fragmentLayout, new NewGroupFragment());
+                fragmentTransaction2.replace(R.id.fragmentLayout, new NewGroupFragment(), NEW_GROUP);
                 fragmentTransaction2.addToBackStack(null);
                 fragmentTransaction2.commit();
                 break;
@@ -283,16 +283,20 @@ public class MainActivity extends AppCompatActivity
         if (drawer != null && drawer.isDrawerOpen()) {
             drawer.closeDrawer();
         } else {
-            if (getSharedPreferences("com.joncatanio.billme_preferences", MODE_PRIVATE).getBoolean("doubleBackExit", true)) {
-                long newClick = System.currentTimeMillis();
-                if (newClick - oldBackClick <= BACK_TIMEOUT) {
-                    super.onBackPressed();
-                } else {
-                    oldBackClick = newClick;
-                    Toast.makeText(this, R.string.back_to_exit, Toast.LENGTH_SHORT).show();
-                }
-            } else {
+            if (fragmentManager.findFragmentByTag(NEW_BILL) != null || fragmentManager.findFragmentByTag(NEW_GROUP) != null) {
                 super.onBackPressed();
+            } else {
+                if (getSharedPreferences("com.joncatanio.billme_preferences", MODE_PRIVATE).getBoolean("doubleBackExit", true)) {
+                    long newClick = System.currentTimeMillis();
+                    if (newClick - oldBackClick <= BACK_TIMEOUT) {
+                        super.onBackPressed();
+                    } else {
+                        oldBackClick = newClick;
+                        Toast.makeText(this, R.string.back_to_exit, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    super.onBackPressed();
+                }
             }
         }
     }
