@@ -298,7 +298,7 @@ public class NewBillFragment extends Fragment {
                     @Override
                     public void onNext(NewBillResponse newBillResponse) {
                         Log.i("NewBill", "Off to new activity!");
-                        getFragmentManager().beginTransaction().remove(thisFrag).commit();
+                        getFragmentManager().popBackStack();
                     }
                 });
     }
